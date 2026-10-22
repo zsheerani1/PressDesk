@@ -238,7 +238,8 @@ splitting, run with `python -m pytest`.
 | `test_short_text_stays_whole` | A short text with no headings stays as "Full manuscript" | Pass |
 | `test_long_text_is_split_into_parts` | A 10,000-word text with no headings is split into parts | Pass |
 
-![All 5 tests passing](docs/screenshots/pytest.png)
+![Pytest PNG](docs/screenshots/pytest.png)
+
 
 ### Validators
 
