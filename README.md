@@ -44,8 +44,21 @@ publisher	filter and search my manuscripts	I can find a submission quickly
 publisher	know my manuscripts are private to my account	other presses can't see them
 [add your own]		
 UX design
-<!-- Include your wireframes or mockups. Save images in docs/ and link them here. -->
+
 Wireframes
+
+Desktop Wireframes:
+
+
+
+
+Mobile Wireframes:
+
+
+
+
+
+
 
 Show Image
 
