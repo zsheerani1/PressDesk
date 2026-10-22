@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{# A small centred card holding a heading, a form and a link below it.
+   Pages fill in the heading, fields and footer blocks. #}
+
+{% block title %}{{ self.heading() }} | PressDesk{% endblock %}
+
+{% block content %}
+  <section class="auth-shell" aria-labelledby="card-heading">
+    <div class="auth-card">
+      <h1 id="card-heading">{% block heading %}{% endblock %}</h1>
+      {% block intro %}{% endblock %}
+
+      {% block form %}
+        <form method="post" novalidate>
+          {{ form.hidden_tag() }}
+          {% block fields %}{% endblock %}
+          {{ form.submit(class_="button button-primary full-width") }}
+        </form>
+      {% endblock %}
+
+      <p class="auth-switch">{% block footer %}{% endblock %}</p>
+    </div>
+  </section>
+{% endblock %}

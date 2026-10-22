@@ -1,29 +1,13 @@
-{% extends "base.html" %}
+{% extends "card.html" %}
+{% from "_macros.html" import field %}
 
 {% block title %}Edit {{ manuscript.title }} | PressDesk{% endblock %}
+{% block heading %}Edit manuscript details{% endblock %}
 
-{% block content %}
-  <section class="auth-shell" aria-labelledby="edit-heading">
-    <div class="auth-card">
-      <h1 id="edit-heading">Edit manuscript details</h1>
-
-      <form method="post" novalidate>
-        {{ form.hidden_tag() }}
-        {% for field in [form.title, form.author_name, form.genre] %}
-          <div class="field-group">
-            {{ field.label }}
-            {{ field() }}
-            {% for error in field.errors %}
-              <span class="field-error">{{ error }}</span>
-            {% endfor %}
-          </div>
-        {% endfor %}
-        {{ form.submit(class_="button button-primary full-width") }}
-      </form>
-
-      <p class="auth-switch">
-        <a href="{{ url_for('view_manuscript', manuscript_id=manuscript.id) }}">Cancel</a>
-      </p>
-    </div>
-  </section>
+{% block fields %}
+  {{ field(form.title) }}
+  {{ field(form.author_name) }}
+  {{ field(form.genre) }}
 {% endblock %}
+
+{% block footer %}<a href="{{ url_for('view_manuscript', manuscript_id=manuscript.id) }}">Cancel</a>{% endblock %}

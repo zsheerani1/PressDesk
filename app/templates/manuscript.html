@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import field %}
 
 {% block title %}{{ manuscript.title }} | PressDesk{% endblock %}
 
@@ -103,13 +104,7 @@
 
         <form method="post" action="{{ url_for('add_note', chapter_id=chapter.id) }}">
           {{ note_form.hidden_tag() }}
-          <div class="field-group">
-            {{ note_form.body.label(text="Add a note") }}
-            {{ note_form.body(rows=4, maxlength=2000) }}
-            {% for error in note_form.body.errors %}
-              <span class="field-error">{{ error }}</span>
-            {% endfor %}
-          </div>
+          {{ field(note_form.body, label="Add a note", rows=4, maxlength=2000) }}
           {{ note_form.submit(class_="button button-primary", value="Add note") }}
         </form>
 

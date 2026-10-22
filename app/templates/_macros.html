@@ -1,0 +1,11 @@
+{# A form field with its label and any error messages. Extra keyword
+   arguments are passed to the input, e.g. field(form.body, rows=4). #}
+{% macro field(f, label=None) %}
+  <div class="field-group">
+    {{ f.label(text=label) if label else f.label }}
+    {{ f(**kwargs) }}
+    {% for error in f.errors %}
+      <span class="field-error">{{ error }}</span>
+    {% endfor %}
+  </div>
+{% endmacro %}

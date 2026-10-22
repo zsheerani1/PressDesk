@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import field %}
 
 {% block title %}Dashboard | PressDesk{% endblock %}
 
@@ -27,15 +28,9 @@
       {% endfor %}
 
       <div class="form-row">
-        {% for field in [upload_form.title, upload_form.author_name, upload_form.genre] %}
-          <div class="field-group">
-            {{ field.label }}
-            {{ field(required=true) }}
-            {% for error in field.errors %}
-              <span class="field-error">{{ error }}</span>
-            {% endfor %}
-          </div>
-        {% endfor %}
+        {{ field(upload_form.title, required=true) }}
+        {{ field(upload_form.author_name, required=true) }}
+        {{ field(upload_form.genre, required=true) }}
       </div>
 
       <div id="upload-errors" class="flash-messages" role="alert"></div>
