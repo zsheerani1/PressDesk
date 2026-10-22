@@ -1,28 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     "use strict";
 
-    const flashMessages = document.querySelectorAll(".flash-message");
-    flashMessages.forEach(function (message) {
-        if (message.dataset.autoDismiss === "true") {
-            setTimeout(function () {
-                message.remove();
-            }, 4000);
-        }
-    });
-
-    setUpUpload();
-});
-
-/**
- * Drag-and-drop upload with a progress bar.
- * Without JavaScript the upload form still works: the drop zone is a
- * label for a normal file input, and the form posts as usual. This code
- * only adds extras on top: dropping a file, showing the file name, and
- * a progress bar while the file uploads.
- */
-function setUpUpload() {
-    "use strict";
-
     const form = document.getElementById("upload-form");
     if (!form) {
         return; // Not on the dashboard.
@@ -41,30 +19,38 @@ function setUpUpload() {
     // Show which file was picked, and suggest a title from its name.
     function showChosenFile() {
         const file = fileInput.files[0];
-        if (!file) {
-            chosenFile.textContent = "";
-            return;
-        }
-        chosenFile.textContent = "Chosen file: " + file.name;
-        if (!titleInput.value) {
+        chosenFile.textContent = file ? "Chosen file: " + file.name : "";
+        if (file && !titleInput.value) {
             titleInput.value = file.name.replace(/\.[^.]+$/, "")
                 .replace(/[-_]+/g, " ");
         }
     }
 
+    function showErrors(messages) {
+        errorBox.innerHTML = "";
+        messages.forEach(function (message) {
+            const item = document.createElement("div");
+            item.className = "flash-message flash-error";
+            item.textContent = message;
+            errorBox.appendChild(item);
+        });
+    }
+
+    // Hide the progress bar and let the publisher try again.
+    function failUpload(messages) {
+        progress.hidden = true;
+        submitButton.disabled = false;
+        showErrors(messages);
+    }
+
     fileInput.addEventListener("change", showChosenFile);
 
     // Highlight the drop zone while a file is dragged over it.
-    ["dragenter", "dragover"].forEach(function (eventName) {
-        dropZone.addEventListener(eventName, function (event) {
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(function (name) {
+        dropZone.addEventListener(name, function (event) {
             event.preventDefault();
-            dropZone.classList.add("is-dragging");
-        });
-    });
-    ["dragleave", "drop"].forEach(function (eventName) {
-        dropZone.addEventListener(eventName, function (event) {
-            event.preventDefault();
-            dropZone.classList.remove("is-dragging");
+            const dragging = name === "dragenter" || name === "dragover";
+            dropZone.classList.toggle("is-dragging", dragging);
         });
     });
 
@@ -80,22 +66,6 @@ function setUpUpload() {
         showChosenFile();
         titleInput.focus(); // Next step: check the details.
     });
-
-    function showErrors(messages) {
-        errorBox.innerHTML = "";
-        messages.forEach(function (message) {
-            const item = document.createElement("div");
-            item.className = "flash-message flash-error";
-            item.textContent = message;
-            errorBox.appendChild(item);
-        });
-    }
-
-   if (request.status === 413) {
-       finishUpload();
-       showErrors(["That file is too large. The maximum is 5 MB."]);
-       return;
-   }
 
     // Send the form in the background so we can show upload progress.
     form.addEventListener("submit", function (event) {
@@ -116,28 +86,23 @@ function setUpUpload() {
         });
 
         request.addEventListener("load", function () {
-            let reply = null;
+            let reply = {};
             try {
-                reply = JSON.parse(request.responseText);
+                reply = JSON.parse(request.responseText) || {};
             } catch (error) {
-                reply = null;
+              
             }
-            if (reply && reply.ok) {
+            if (reply.ok) {
                 // The server has saved a flash message for the next page.
                 window.location.href = reply.redirect;
                 return;
             }
-            finishUpload();
-            if (reply && reply.errors) {
-                showErrors(reply.errors);
-            } else {
-                showErrors(["Something went wrong. Please try again."]);
-            }
+            failUpload(reply.errors ||
+                ["Something went wrong. Please try again."]);
         });
 
         request.addEventListener("error", function () {
-            finishUpload();
-            showErrors([
+            failUpload([
                 "The upload failed. The file may be too large " +
                 "(maximum 5 MB), or the connection was lost."
             ]);
@@ -149,4 +114,4 @@ function setUpUpload() {
         submitButton.disabled = true;
         request.send(new FormData(form));
     });
-}
+});
