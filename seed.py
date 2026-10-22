@@ -157,3 +157,39 @@ def create_manuscript(owner, data, days_ago):
         manuscript.chapters.append(chapter)
 
     db.session.add(manuscript)
+
+
+def main():
+    """Add any missing demo data without changing what's already there."""
+    with create_app().app_context():
+        # Create the demo account if it doesn't exist yet.
+        owner = User.query.filter_by(email=DEMO_PUBLISHER["email"]).first()
+        if owner:
+            print(f"Skipped account {owner.email}: it already exists.")
+        else:
+            owner = User(
+                name=DEMO_PUBLISHER["name"],
+                email=DEMO_PUBLISHER["email"],
+                press_name=DEMO_PUBLISHER["press_name"],
+            )
+            owner.set_password(DEMO_PUBLISHER["password"])
+            db.session.add(owner)
+            print(f"Created publisher account {owner.email}.")
+
+        # Add any demo manuscripts that are missing.
+        for days_ago, data in enumerate(MANUSCRIPTS, start=1):
+            if any(m.title == data["title"] for m in owner.manuscripts):
+                print(f"Skipped manuscript '{data['title']}': it already "
+                      "exists.")
+            else:
+                create_manuscript(owner, data, days_ago)
+                print(f"Created manuscript '{data['title']}'.")
+        db.session.commit()
+
+    print("\nDemo data ready. Log in with:")
+    print(f"  email:    {DEMO_PUBLISHER['email']}")
+    print(f"  password: {DEMO_PUBLISHER['password']}")
+
+
+if __name__ == "__main__":
+    main()
