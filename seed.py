@@ -26,32 +26,32 @@ MANUSCRIPTS = [
         "chapters": [
             (
                 "Chapter I",
-                "It is a truth universally acknowledged, that a single ",
-                "man in possession of a good fortune, must be in want ",
+                "It is a truth universally acknowledged, that a single "
+                "man in possession of a good fortune, must be in want "
                 "of a wife.",
                 True,
-                  [
-      ("Brilliant first line: confident, funny and sets up ",
-       "the whole plot in one sentence.", False),
-      ("Is the narrator being ironic here, or is this ",
-       "Mrs Bennet's view? Worth asking the author.", True),
-  ],
+                [
+                    ("Brilliant first line: confident, funny and sets up "
+                     "the whole plot in one sentence.", False),
+                    ("Is the narrator being ironic here, or is this "
+                     "Mrs Bennet's view? Worth asking the author.", True),
+                ],
             ),
             (
                 "Chapter II",
-                "The astonishment of the ladies was just what he ",
-                "wished—that of Mrs. Bennet perhaps surpassing the rest; ",
-                "though when the first tumult of joy was over, she began ",
-                "to declare that it was what she had expected all the ",
+                "The astonishment of the ladies was just what he "
+                "wished—that of Mrs. Bennet perhaps surpassing the rest; "
+                "though when the first tumult of joy was over, she began "
+                "to declare that it was what she had expected all the "
                 "while.",
                 True,
                 [],
             ),
             (
                 "Chapter III",
-                "Not all that Mrs. Bennet, however, with the assistance ",
-                "of her five daughters, could ask on the subject, was ",
-                "sufficient to draw from her husband any satisfactory ",
+                "Not all that Mrs. Bennet, however, with the assistance "
+                "of her five daughters, could ask on the subject, was "
+                "sufficient to draw from her husband any satisfactory "
                 "description of Mr. Bingley.",
                 False,
                 [],
@@ -66,21 +66,21 @@ MANUSCRIPTS = [
         "chapters": [
             (
                 "Chapter I",
-                "My father's family name being Pirrip, and my Christian ",
-                "name Philip, my infant tongue could make of both names ",
+                "My father's family name being Pirrip, and my Christian "
+                "name Philip, my infant tongue could make of both names "
                 "nothing longer or more explicit than Pip.",
                 True,
-                [("Wonderful narrative voice. We know who Pip is ",
+                [("Wonderful narrative voice. We know who Pip is "
                   "straight away.", False)],
             ),
             (
                 "Chapter II",
-                "My sister, Mrs. Joe Gargery, was more than twenty years ",
-                "older than I, and had established a great reputation ",
-                "with herself and the neighbours because she had brought ",
+                "My sister, Mrs. Joe Gargery, was more than twenty years "
+                "older than I, and had established a great reputation "
+                "with herself and the neighbours because she had brought "
                 "me up \"by hand.\"",
                 True,
-                [("Mrs Joe is very harsh. Will readers stay with this ",
+                [("Mrs Joe is very harsh. Will readers stay with this "
                   "household?", False)],
             ),
             (
@@ -99,27 +99,27 @@ MANUSCRIPTS = [
         "chapters": [
             (
                 "CHAPTER 1. Loomings.",
-                "Call me Ishmael. Some years ago—never mind how long ",
-                "precisely—having little or no money in my purse, and ",
-                "nothing particular to interest me on shore, I thought I ",
-                "would sail about a little and see the watery part of ",
+                "Call me Ishmael. Some years ago—never mind how long "
+                "precisely—having little or no money in my purse, and "
+                "nothing particular to interest me on shore, I thought I "
+                "would sail about a little and see the watery part of "
                 "the world.",
                 False,
                 [],
             ),
             (
                 "CHAPTER 2. The Carpet-Bag.",
-                "I stuffed a shirt or two into my old carpet-bag, tucked ",
-                "it under my arm, and started for Cape Horn and the ",
+                "I stuffed a shirt or two into my old carpet-bag, tucked "
+                "it under my arm, and started for Cape Horn and the "
                 "Pacific.",
                 False,
                 [],
             ),
             (
                 "CHAPTER 3. The Spouter-Inn.",
-                "Entering that gable-ended Spouter-Inn, you found ",
-                "yourself in a wide, low, straggling entry with ",
-                "old-fashioned wainscots, reminding one of the bulwarks ",
+                "Entering that gable-ended Spouter-Inn, you found "
+                "yourself in a wide, low, straggling entry with "
+                "old-fashioned wainscots, reminding one of the bulwarks "
                 "of some condemned old craft.",
                 False,
                 [],
