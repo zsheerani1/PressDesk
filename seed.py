@@ -1,7 +1,5 @@
 """Add a demo publisher and demo manuscripts to the local database.
-
-Anything that already exists is skipped, so it is safe to run more than
-once. Run with:  python seed.py
+Run with:  python seed.py
 """
 
 from datetime import timedelta
@@ -21,35 +19,39 @@ DEMO_PUBLISHER = {
 # Each note is (body, was_edited).
 MANUSCRIPTS = [
     {
-        "title": "Pride & Prejudice",
+        "title": "Pride and Prejudice",
         "author_name": "Jane Austen",
-        "genre": "classical literature",
+        "genre": "Classic fiction",
         "status": "reading",
         "chapters": [
             (
                 "Chapter I",
-                "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+                "It is a truth universally acknowledged, that a single ",
+                "man in possession of a good fortune, must be in want ",
+                "of a wife.",
                 True,
-                [
-                    ("Brilliant first line: confident, funny and sets up "
-                     "the whole plot in one sentence", False),
-                    ("Is the narrator being ironic here, or is this"
-                     "Mrs Bennet's view? Worth asking the author", True),
-                ],
+                  [
+      ("Brilliant first line: confident, funny and sets up ",
+       "the whole plot in one sentence.", False),
+      ("Is the narrator being ironic here, or is this ",
+       "Mrs Bennet's view? Worth asking the author.", True),
+  ],
             ),
             (
                 "Chapter II",
-                "The astonishment of the ladies was just what he wished—that of Mrs. Bennet perhaps surpassing the rest;"
-                "though when the first tumult of joy was over, "
-                "she began to declare that it was what she had expected all the while. "
+                "The astonishment of the ladies was just what he ",
+                "wished—that of Mrs. Bennet perhaps surpassing the rest; ",
+                "though when the first tumult of joy was over, she began ",
+                "to declare that it was what she had expected all the ",
+                "while.",
                 True,
                 [],
             ),
             (
                 "Chapter III",
-                "Not all that Mrs. Bennet, however, with the assistance "
-                "of her five daughters, could ask on the subject, was "
-                "sufficient to draw from her husband any satisfactory "
+                "Not all that Mrs. Bennet, however, with the assistance ",
+                "of her five daughters, could ask on the subject, was ",
+                "sufficient to draw from her husband any satisfactory ",
                 "description of Mr. Bingley.",
                 False,
                 [],
@@ -57,36 +59,34 @@ MANUSCRIPTS = [
         ],
     },
     {
-        "title": "Great expectations",
+        "title": "Great Expectations",
         "author_name": "Charles Dickens",
-        "genre": "Classic literature",
+        "genre": "Classic fiction",
         "status": "shortlisted",
         "chapters": [
             (
-                "Chapter 1: Night Bus",
-                "The N29 driver had a rule: anyone still on board at the "
-                "last stop got a cup of tea from his flask. Most nights "
-                "nobody was. Tonight there were three of them.",
+                "Chapter I",
+                "My father's family name being Pirrip, and my Christian ",
+                "name Philip, my infant tongue could make of both names ",
+                "nothing longer or more explicit than Pip.",
                 True,
-                [("Lovely, warm voice. This is the story to lead the "
-                  "collection with.", False)],
+                [("Wonderful narrative voice. We know who Pip is ",
+                  "straight away.", False)],
             ),
             (
-                "Chapter 2: The Baker's Alarm",
-                "Mira's alarm went off at 3:40 every morning, and every "
-                "morning for six years she had been awake a minute before "
-                "it, waiting.",
+                "Chapter II",
+                "My sister, Mrs. Joe Gargery, was more than twenty years ",
+                "older than I, and had established a great reputation ",
+                "with herself and the neighbours because she had brought ",
+                "me up \"by hand.\"",
                 True,
-                [("Ending feels rushed; would one more page help?",
-                  False)],
+                [("Mrs Joe is very harsh. Will readers stay with this ",
+                  "household?", False)],
             ),
             (
                 "Chapter III",
-                "Not all that Mrs. Bennet, however, with the assistance "
-                "of her five daughters, could ask on the subject, was "
-                "sufficient to draw from her husband any satisfactory "
-                "description of Mr. Bingley.",
-                False,
+                "It was a rimy morning, and very damp.",
+                True,
                 [],
             ),
         ],
@@ -99,26 +99,28 @@ MANUSCRIPTS = [
         "chapters": [
             (
                 "CHAPTER 1. Loomings.",
-                "Call me Ishmael. "
-                "Some years ago—never mind how long precisely—"
-                "having little or no money in my purse",
-                "and nothing particular to interest me on shore"
-                "I thought I would sail about a little and see the watery part of the world. ",
+                "Call me Ishmael. Some years ago—never mind how long ",
+                "precisely—having little or no money in my purse, and ",
+                "nothing particular to interest me on shore, I thought I ",
+                "would sail about a little and see the watery part of ",
+                "the world.",
                 False,
                 [],
             ),
             (
                 "CHAPTER 2. The Carpet-Bag.",
-                "I stuffed a shirt or two into my old carpet-bag,"
-                "tucked it under my arm, and started for Cape Horn and the Pacific",
+                "I stuffed a shirt or two into my old carpet-bag, tucked ",
+                "it under my arm, and started for Cape Horn and the ",
+                "Pacific.",
                 False,
                 [],
             ),
             (
                 "CHAPTER 3. The Spouter-Inn.",
-                "Entering that gable-ended Spouter-Inn"
-                "you found yourself in a wide, low, straggling entry with old-fashioned wainscots"
-                "reminding one of the bulwarks of some condemned old craft."
+                "Entering that gable-ended Spouter-Inn, you found ",
+                "yourself in a wide, low, straggling entry with ",
+                "old-fashioned wainscots, reminding one of the bulwarks ",
+                "of some condemned old craft.",
                 False,
                 [],
             ),
