@@ -1,34 +1,30 @@
 import os
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-
-# Load secret values from env.py when running locally
-
-if os.path.exists(os.path.join(BASE_DIR, "env.py")):
+   # Load secret values from env.py when running locally.
+   # env.py is in .gitignore, so it's never uploaded.
+try:
     import env
+except ImportError:
+    env = None
 
-    os.environ.setdefault("SECRET_KEY", getattr(env, "SECRET_KEY", ""))
-    os.environ.setdefault("DATABASE_URL", getattr(env, "DATABASE_URL", ""))
-    os.environ.setdefault("DEBUG", getattr(env, "DEBUG", "False"))
-
-
-def get_database_url():
-    """Fix Heroku's postgres:// prefix, which SQLAlchemy doesn't accept."""
-    url = os.environ.get("DATABASE_URL", "")
-    if url.startswith("postgres://"):
-        url = url.replace("postgres://", "postgresql://", 1)
-    return url
+if env:
+    os.environ.setdefault("SECRET_KEY", env.SECRET_KEY)
+    os.environ.setdefault("DATABASE_URL", env.DATABASE_URL)
+    os.environ.setdefault("DEBUG", env.DEBUG)
 
 
 class Config:
     """Settings used by the Flask app."""
 
     SECRET_KEY = os.environ.get("SECRET_KEY")
-    SQLALCHEMY_DATABASE_URI = get_database_url()
+    # Heroku gives a postgres:// address, which SQLAlchemy doesn't accept.
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "").replace(
+        "postgres://", "postgresql://", 1
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Debug mode stays off unless DEBUG is set to true
-    DEBUG = os.environ.get("DEBUG", "False") == "True"
+    # Debug mode stays off unless DEBUG is set to True
+    DEBUG = os.environ.get("DEBUG") == "True"
 
-    #Block very large uploads; the form gives a friendly error over 5 MB.
+    # Block very large uploads; the form gives a friendly error over 5 MB.
     MAX_CONTENT_LENGTH = 20 * 1024 * 1024

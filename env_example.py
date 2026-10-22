@@ -1,9 +1,5 @@
-"""Example local environment variables for development.
+# Make a copy of this called env.py and put your own details in it>>
 
-Copy this file to env.py and fill in your own values before running the
-app locally. Never commit env.py.
-"""
-
-SECRET_KEY = "replace-with-a-long-random-string"
-DATABASE_URL = "replace-with-your-database-url"
-DEBUG = "replace-with-True-or-False"
+SECRET_KEY = "your-secret-key"
+DATABASE_URL = "your-database-url"
+DEBUG = "True"  # use "False" on a live site
