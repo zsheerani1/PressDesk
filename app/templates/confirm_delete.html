@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}{{ heading }} | PressDesk{% endblock %}
+
+{% block content %}
+  <section class="auth-shell" aria-labelledby="delete-heading">
+    <div class="auth-card">
+      <h1 id="delete-heading">{{ heading }}</h1>
+      <p>{{ message }}</p>
+      <p><strong>This cannot be undone.</strong></p>
+
+      <form method="post" action="{{ action_url }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <button type="submit" class="button button-primary full-width">Yes, delete it</button>
+      </form>
+
+      <p class="auth-switch">
+        <a href="{{ cancel_url }}">No, keep it</a>
+      </p>
+    </div>
+  </section>
+{% endblock %}

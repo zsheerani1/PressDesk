@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Edit note | PressDesk{% endblock %}
+
+{% block content %}
+  <section class="auth-shell" aria-labelledby="note-heading">
+    <div class="auth-card">
+      <h1 id="note-heading">Edit note</h1>
+      <p class="auth-intro">On '{{ note.chapter.title }}' in '{{ note.chapter.manuscript.title }}'.</p>
+
+      <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="field-group">
+          {{ form.body.label }}
+          {{ form.body(rows=6, maxlength=2000) }}
+          {% for error in form.body.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+        {{ form.submit(class_="button button-primary full-width") }}
+      </form>
+
+      <p class="auth-switch">
+        <a href="{{ chapter_url(note.chapter) }}">Cancel</a>
+      </p>
+    </div>
+  </section>
+{% endblock %}

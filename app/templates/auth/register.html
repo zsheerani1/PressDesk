@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Create account | PressDesk{% endblock %}
+
+{% block content %}
+  <section class="auth-shell" aria-labelledby="register-heading">
+    <div class="auth-card">
+      <h1 id="register-heading">Create your account</h1>
+      <p class="auth-intro">Create a publisher account to upload and read manuscripts.</p>
+
+      <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="field-group">
+          {{ form.name.label }}
+          {{ form.name() }}
+          {% for error in form.name.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="field-group">
+          {{ form.email.label }}
+          {{ form.email() }}
+          {% for error in form.email.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="field-group">
+          {{ form.password.label }}
+          {{ form.password() }}
+          {% for error in form.password.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="field-group">
+          {{ form.press_name.label }}
+          {{ form.press_name() }}
+          {% for error in form.press_name.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        {{ form.submit(class_="button button-primary full-width") }}
+      </form>
+
+      <p class="auth-switch">
+        Already have an account?
+        <a href="{{ url_for('login') }}">Log in</a>
+      </p>
+    </div>
+  </section>
+{% endblock %}

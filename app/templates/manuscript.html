@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}{{ manuscript.title }} | PressDesk{% endblock %}
+
+{# Previous / Next buttons, shown above and below the chapter text. #}
+{% macro chapter_nav(label) %}
+  <nav class="chapter-nav" aria-label="{{ label }}">
+    {% if previous_chapter %}
+      <a class="button button-secondary" href="{{ chapter_url(previous_chapter) }}" rel="prev">
+        &larr; Previous chapter
+      </a>
+    {% else %}
+      <span class="button button-secondary is-disabled" aria-hidden="true">&larr; Previous chapter</span>
+    {% endif %}
+
+    <span class="chapter-position">Chapter {{ position }} of {{ manuscript.chapter_count }}</span>
+
+    {% if next_chapter %}
+      <a class="button button-secondary" href="{{ chapter_url(next_chapter) }}" rel="next">
+        Next chapter &rarr;
+      </a>
+    {% else %}
+      <span class="button button-secondary is-disabled" aria-hidden="true">Next chapter &rarr;</span>
+    {% endif %}
+  </nav>
+{% endmacro %}
+
+{% block content %}
+  <p><a href="{{ url_for('dashboard') }}">&larr; Back to dashboard</a></p>
+
+  {# ---------- Manuscript details ---------- #}
+  <section class="panel manuscript-header" aria-labelledby="manuscript-heading">
+    <div>
+      <h1 id="manuscript-heading">{{ manuscript.title }}</h1>
+      <p>
+        by {{ manuscript.author_name }} &middot; {{ manuscript.genre }}
+        &middot; uploaded {{ manuscript.uploaded_at.strftime('%d %b %Y') }}
+      </p>
+      <p>
+        <span class="status-tag status-{{ manuscript.status }}">{{ manuscript.status|capitalize }}</span>
+        {{ manuscript.read_count }} of {{ manuscript.chapter_count }} chapters read
+        &middot; {{ manuscript.note_count }} notes
+      </p>
+    </div>
+
+    <div class="manuscript-actions">
+      <form method="post" action="{{ url_for('change_status', manuscript_id=manuscript.id) }}" class="inline-form">
+        {{ status_form.hidden_tag() }}
+        <input type="hidden" name="back" value="{{ chapter_url(chapter) if chapter else '' }}" />
+        {{ status_form.status.label }}
+        {{ status_form.status() }}
+        {{ status_form.submit(class_="button button-secondary") }}
+      </form>
+      <a class="button button-secondary" href="{{ url_for('edit_manuscript', manuscript_id=manuscript.id) }}">Edit details</a>
+      <a class="button button-secondary" href="{{ url_for('delete_manuscript', manuscript_id=manuscript.id) }}">Delete</a>
+    </div>
+  </section>
+
+  {% if not chapter %}
+    <p class="empty-state">This manuscript has no chapters.</p>
+  {% else %}
+    <div class="reader-layout">
+
+      {# ---------- Chapter list ---------- #}
+      <nav class="panel chapter-list" aria-label="Chapters">
+        <h2>Chapters</h2>
+        <ol>
+          {% for item in manuscript.chapters %}
+            <li>
+              <a href="{{ chapter_url(item) }}" {% if item.id == chapter.id %}aria-current="page"{% endif %}>
+                {{ item.title }}
+              </a>
+              <span class="chapter-meta">
+                {{ '✓ Read' if item.is_read else 'Unread' }}
+                &middot; {{ item.notes|length }} {{ 'note' if item.notes|length == 1 else 'notes' }}
+              </span>
+            </li>
+          {% endfor %}
+        </ol>
+      </nav>
+
+      {# ---------- Chapter text ---------- #}
+      <article class="panel chapter-text" aria-labelledby="chapter-heading">
+        {{ chapter_nav("Chapter navigation (top)") }}
+        <h2 id="chapter-heading">{{ chapter.title }}</h2>
+        <form method="post" action="{{ url_for('mark_chapter', chapter_id=chapter.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          {% if chapter.is_read %}
+            <input type="hidden" name="read" value="no" />
+            <button type="submit" class="button button-secondary">Mark as unread</button>
+          {% else %}
+            <input type="hidden" name="read" value="yes" />
+            <button type="submit" class="button button-primary">Mark as read</button>
+          {% endif %}
+        </form>
+        <div class="chapter-body">{{ chapter.content }}</div>
+        {{ chapter_nav("Chapter navigation (bottom)") }}
+      </article>
+
+      {# ---------- Notes ---------- #}
+      <aside class="panel chapter-notes" aria-labelledby="notes-heading">
+        <h2 id="notes-heading">Notes on this chapter</h2>
+
+        <form method="post" action="{{ url_for('add_note', chapter_id=chapter.id) }}">
+          {{ note_form.hidden_tag() }}
+          <div class="field-group">
+            {{ note_form.body.label(text="Add a note") }}
+            {{ note_form.body(rows=4, maxlength=2000) }}
+            {% for error in note_form.body.errors %}
+              <span class="field-error">{{ error }}</span>
+            {% endfor %}
+          </div>
+          {{ note_form.submit(class_="button button-primary", value="Add note") }}
+        </form>
+
+        {% if chapter.notes %}
+          <ul class="note-list">
+            {% for note in chapter.notes %}
+              <li class="note">
+                <p class="note-body">{{ note.body }}</p>
+                <p class="note-meta">
+                  {{ note.created_at.strftime('%d %b %Y, %H:%M') }}
+                  {% if note.is_edited %}&middot; edited{% endif %}
+                </p>
+                <p>
+                  <a href="{{ url_for('edit_note', note_id=note.id) }}">Edit</a>
+                  &middot;
+                  <a href="{{ url_for('delete_note', note_id=note.id) }}">Delete</a>
+                </p>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No notes on this chapter yet.</p>
+        {% endif %}
+      </aside>
+    </div>
+  {% endif %}
+{% endblock %}

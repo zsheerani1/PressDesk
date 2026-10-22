@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Home | PressDesk{% endblock %}
+
+{% block content %}
+  {# ---------- Introduction ---------- #}
+  <section class="home-intro" aria-labelledby="home-heading">
+    <h1 id="home-heading">Read and review manuscripts, one chapter at a time.</h1>
+    <p class="lede">
+      PressDesk is a simple tool for small publishers. Upload a book manuscript and
+      PressDesk splits it into chapters, so you can read it, keep notes, and record
+      your decision, all from one dashboard.
+    </p>
+
+    <div class="button-row">
+      <a class="button button-primary" href="{{ url_for('register') }}">Create a free account</a>
+      <a class="button button-secondary" href="{{ url_for('login') }}">Log in</a>
+    </div>
+  </section>
+
+  {# ---------- How it works ---------- #}
+  <section aria-labelledby="steps-heading">
+    <h2 id="steps-heading">How it works</h2>
+    <ol class="home-steps">
+      <li class="panel">
+        <h3>1. Upload</h3>
+        <p>Drag a Word (.docx), text (.txt) or PDF file onto your dashboard and add its title, author and genre.</p>
+      </li>
+      <li class="panel">
+        <h3>2. Read</h3>
+        <p>PressDesk finds the chapters for you. Read them one by one and mark each as read as you go.</p>
+      </li>
+      <li class="panel">
+        <h3>3. Decide</h3>
+        <p>Add notes to any chapter, then move the manuscript through the stages below until you reach a decision.</p>
+      </li>
+    </ol>
+  </section>
+
+  {# ---------- Statuses ---------- #}
+  <section class="panel" aria-labelledby="status-heading">
+    <h2 id="status-heading">What the stages mean</h2>
+    <dl class="home-statuses">
+      <dt><span class="status-tag status-received">Received</span></dt>
+      <dd>The manuscript has been uploaded but not opened yet.</dd>
+      <dt><span class="status-tag status-reading">Reading</span></dt>
+      <dd>You have started reading it. This happens automatically when you first open it.</dd>
+      <dt><span class="status-tag status-shortlisted">Shortlisted</span></dt>
+      <dd>It is one of the strongest, and you are considering publishing it.</dd>
+      <dt><span class="status-tag status-accepted">Accepted</span></dt>
+      <dd>You have decided to publish it.</dd>
+      <dt><span class="status-tag status-declined">Declined</span></dt>
+      <dd>You have decided not to publish it.</dd>
+    </dl>
+  </section>
+{% endblock %}

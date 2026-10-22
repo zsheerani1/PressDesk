@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | PressDesk{% endblock %}
+
+{% block content %}
+  <h1>{{ current_user.press_name }} dashboard</h1>
+
+  {# ---------- Upload ---------- #}
+  <section class="panel" aria-labelledby="upload-heading">
+    <h2 id="upload-heading">Upload a manuscript</h2>
+
+    <form id="upload-form" method="post" action="{{ url_for('upload_manuscript') }}"
+          enctype="multipart/form-data" novalidate>
+      {{ upload_form.hidden_tag() }}
+
+      {# The real file input sits inside the drop zone, so keyboard and
+         screen-reader users can use it like any normal file input. #}
+      <label class="drop-zone" id="drop-zone" for="manuscript_file">
+        <span class="drop-zone-text">Drop a manuscript here, or click to choose a file</span>
+        <span class="drop-zone-hint" id="file-hint">.docx, .txt or .pdf, up to 5 MB</span>
+        <span class="drop-zone-file" id="chosen-file" aria-live="polite"></span>
+        {{ upload_form.manuscript_file(class_="visually-hidden", accept=".docx,.txt,.pdf",
+                                       **{"aria-describedby": "file-hint"}) }}
+      </label>
+      {% for error in upload_form.manuscript_file.errors %}
+        <span class="field-error">{{ error }}</span>
+      {% endfor %}
+
+      <div class="form-row">
+        {% for field in [upload_form.title, upload_form.author_name, upload_form.genre] %}
+          <div class="field-group">
+            {{ field.label }}
+            {{ field(required=true) }}
+            {% for error in field.errors %}
+              <span class="field-error">{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <div id="upload-errors" class="flash-messages" role="alert"></div>
+
+      <div id="upload-progress" class="upload-progress" hidden>
+        <label for="upload-progress-bar" id="upload-progress-label">Uploading…</label>
+        <progress id="upload-progress-bar" max="100" value="0"></progress>
+      </div>
+
+      {{ upload_form.submit(class_="button button-primary") }}
+    </form>
+  </section>
+
+  {# ---------- Status counts ---------- #}
+  <section aria-labelledby="counts-heading">
+    <h2 id="counts-heading" class="visually-hidden">Manuscripts by status</h2>
+    <ul class="count-cards">
+      <li>
+        <a href="{{ url_for('dashboard') }}" {% if not status_filter %}aria-current="true"{% endif %}>
+          <span>All</span> <strong>{{ total }}</strong>
+        </a>
+      </li>
+      {% for status in statuses %}
+        <li>
+          <a href="{{ url_for('dashboard', status=status) }}" class="count-{{ status }}"
+             {% if status_filter == status %}aria-current="true"{% endif %}>
+            <span>{{ status|capitalize }}:</span> <strong>{{ counts[status] }}</strong>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {# ---------- Manuscript list ---------- #}
+  <section class="panel" aria-labelledby="list-heading">
+    <h2 id="list-heading">Your manuscripts</h2>
+
+    {% if total == 0 %}
+      <div class="empty-state">
+        <h3>No manuscripts yet</h3>
+        <p>To get started:</p>
+        <ol>
+          <li>Drag a .docx, .txt or .pdf file onto the upload area above (or click it to choose a file).</li>
+          <li>Type the title, author name and genre, then press <strong>Upload manuscript</strong>.</li>
+          <li>PressDesk splits it into chapters. Open it to read each chapter, mark chapters as read and add notes.</li>
+        </ol>
+        <p>No manuscript to hand? Use one of the example files in the project's <code>samples/</code> folder.</p>
+      </div>
+    {% else %}
+      <form method="get" action="{{ url_for('dashboard') }}" class="filter-form" role="search">
+        <div class="field-group">
+          <label for="status-filter">Status</label>
+          <select id="status-filter" name="status">
+            <option value="">All statuses</option>
+            {% for status in statuses %}
+              <option value="{{ status }}" {% if status == status_filter %}selected{% endif %}>{{ status|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="search">Search title or author</label>
+          <input type="search" id="search" name="q" value="{{ search }}" />
+        </div>
+        <button type="submit" class="button button-secondary">Apply</button>
+        {% if status_filter or search %}
+          <a href="{{ url_for('dashboard') }}">Clear filters</a>
+        {% endif %}
+      </form>
+
+      {% if manuscripts %}
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Genre</th>
+                <th scope="col">Status</th>
+                <th scope="col">Chapters</th>
+                <th scope="col">Reading progress</th>
+                <th scope="col">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for manuscript in manuscripts %}
+                <tr>
+                  <td><a href="{{ url_for('view_manuscript', manuscript_id=manuscript.id) }}">{{ manuscript.title }}</a></td>
+                  <td>{{ manuscript.author_name }}</td>
+                  <td>{{ manuscript.genre }}</td>
+                  <td><span class="status-tag status-{{ manuscript.status }}">{{ manuscript.status|capitalize }}</span></td>
+                  <td>{{ manuscript.chapter_count }}</td>
+                  <td>{{ manuscript.read_count }} of {{ manuscript.chapter_count }} chapters read</td>
+                  <td>{{ manuscript.note_count }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="empty-state">No manuscripts match your filter. <a href="{{ url_for('dashboard') }}">Show all manuscripts</a>.</p>
+      {% endif %}
+    {% endif %}
+  </section>
+{% endblock %}
