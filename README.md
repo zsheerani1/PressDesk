@@ -49,8 +49,10 @@ Wireframes
 
 Desktop Wireframes:
 
+![Desktop Wireframe](assets/screenshots/wireframe-manuscript-desktop.png)
 
 
+![Desktop Wireframe](assets/screenshots/wireframe-home-desktop.png)
 
 Mobile Wireframes:
 
