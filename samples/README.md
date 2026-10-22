@@ -1,14 +1,19 @@
 # Sample files for testing PressDesk
 
-All text in these files is original and was written for this project.
+These files are for trying out the upload and chapter-splitting
+features. The books are in the public domain and come from
+[Project Gutenberg](https://www.gutenberg.org/), with the Gutenberg
+licence text and contents lists removed for ease of use.
 
-| File | What it tests | What should happen |
-|---|---|---|
-| `the-tide-clock.txt` | A .txt file with headings written in different ways ("Chapter One", "CHAPTER 2: …", "Chapter 3 – …", "Chapter IV") | Uploaded with **4 chapters** |
-| `salt-and-ash.docx` | A Word file whose chapter titles use the **Heading 1** style (they don't start with "Chapter") | Uploaded with **4 chapters** |
-| `the-glasshouse-winter.pdf` | A PDF. PDFs have no heading styles, so it is split on its "Chapter 1: …" lines | Uploaded with **3 chapters** |
-| `no-chapter-headings.txt` | A file with no chapter headings | Uploaded as **1 chapter** called "Full manuscript" |
-| `empty.txt` | An empty file | Error: "The file you chose is empty." |
+| File | Book | What it tests | What should happen |
+|---|---|---|---|
+| `frankenstein.pdf` | *Frankenstein*, Mary Shelley | A PDF split on its "Chapter 1", "Chapter 2"… lines. The book opens with four letters before Chapter 1. | Uploaded with **[n] chapters**, with the letters kept together as "Opening pages" |
+| `alice-in-wonderland.docx` | *Alice's Adventures in Wonderland*, Lewis Carroll | A Word file whose chapter titles use the **Heading 1** style and don't start with "Chapter" (e.g. "Down the Rabbit-Hole") | Uploaded with **[n] chapters** |
+| `im-bernsteinwald.txt` | *Im Bernsteinwald*, Wilhelm Bölsche (1927) | A German text with no English "Chapter" headings | Uploaded as **1 chapter** called "Full manuscript" |
+| `empty.txt` | — | An empty file | Error: "The file you chose is empty." |
+
+Different heading styles ("Chapter One", "CHAPTER 2: …", "Chapter IV")
+are checked by the automated tests in `tests/test_chapters.py`.
 
 ## Other things to try
 
@@ -20,8 +25,6 @@ All text in these files is original and was written for this project.
   file is too large. The maximum size is 5 MB." To make one, run this
   from the project folder:
 
-  ```
+```
   python -c "open('samples/too-big.txt', 'w').write('words ' * 1100000)"
-  ```
-
-  (Delete `too-big.txt` afterwards; it isn't meant to be committed.)
+```
