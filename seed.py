@@ -1,11 +1,7 @@
-# This script creates demo data (one publisher with a few manuscripts,
-# chapters and notes) for testing PressDesk locally. It never deletes or
-# changes existing data: anything that already exists is skipped, so it
-# is safe to run more than once.
-
 """Add a demo publisher and demo manuscripts to the local database.
 
-Run with:  python seed.py
+Anything that already exists is skipped, so it is safe to run more than
+once. Run with:  python seed.py
 """
 
 from datetime import timedelta
@@ -18,54 +14,52 @@ DEMO_PUBLISHER = {
     "name": "Alex Morgan",
     "email": "demo@pressdesk.example.com",
     "password": "DemoPress2026!",
-    "press_name": "Hollow Tree Press",
+    "press_name": "Chapter House Press",
 }
 
 # Each chapter is (title, content, is_read, [notes]).
 # Each note is (body, was_edited).
 MANUSCRIPTS = [
     {
-        "title": "The Lamplighter's Apprentice",
-        "author_name": "Ines Calloway",
-        "genre": "Historical fiction",
+        "title": "Pride & Prejudice",
+        "author_name": "Jane Austen",
+        "genre": "classical literature",
         "status": "reading",
         "chapters": [
             (
-                "Chapter 1: Oil and Wick",
-                "In the winter of 1851, Tobias Reed was eleven years old and "
-                "could light forty-two street lamps between dusk and the "
-                "first bell from St Anne's. Mr Halloran, who had lit them "
-                "for thirty years, said he was too quick by half.",
+                "Chapter I",
+                "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
                 True,
                 [
-                    ("Strong opening line. The number of lamps gives us "
-                     "Tobias's pride straight away.", False),
-                    ("Check the date: were gas lamps lit by hand on this "
-                     "street in 1851? Ask the author for a source.", True),
+                    ("Brilliant first line: confident, funny and sets up "
+                     "the whole plot in one sentence", False),
+                    ("Is the narrator being ironic here, or is this"
+                     "Mrs Bennet's view? Worth asking the author", True),
                 ],
             ),
             (
-                "Chapter 2: The Dark Street",
-                "One lamp on Tanner's Row would not light. Tobias tried it "
-                "three nights running, and on the fourth he climbed the "
-                "post and found a folded letter where the wick should be.",
+                "Chapter II",
+                "The astonishment of the ladies was just what he wished—that of Mrs. Bennet perhaps surpassing the rest;"
+                "though when the first tumult of joy was over, "
+                "she began to declare that it was what she had expected all the while. "
                 True,
                 [],
             ),
             (
-                "Chapter 3: Halloran's Secret",
-                "The letter was addressed to Mr Halloran, in a hand Tobias "
-                "did not know, and it was dated twenty years before he was "
-                "born.",
+                "Chapter III",
+                "Not all that Mrs. Bennet, however, with the assistance "
+                "of her five daughters, could ask on the subject, was "
+                "sufficient to draw from her husband any satisfactory "
+                "description of Mr. Bingley.",
                 False,
                 [],
             ),
         ],
     },
     {
-        "title": "Small Hours",
-        "author_name": "Rowan Achebe",
-        "genre": "Short stories",
+        "title": "Great expectations",
+        "author_name": "Charles Dickens",
+        "genre": "Classic literature",
         "status": "shortlisted",
         "chapters": [
             (
@@ -87,40 +81,44 @@ MANUSCRIPTS = [
                   False)],
             ),
             (
-                "Chapter 3: Hospital Car Park",
-                "Ticket machines, Dev decided, were the loneliest objects "
-                "in the world, and he had now spent four nights talking "
-                "to one.",
-                True,
+                "Chapter III",
+                "Not all that Mrs. Bennet, however, with the assistance "
+                "of her five daughters, could ask on the subject, was "
+                "sufficient to draw from her husband any satisfactory "
+                "description of Mr. Bingley.",
+                False,
                 [],
             ),
         ],
     },
     {
-        "title": "North of the Orchard",
-        "author_name": "Marta Lindqvist",
-        "genre": "Literary fiction",
+        "title": "Moby Dick",
+        "author_name": "Herman Melville",
+        "genre": "Adventure fiction",
         "status": "received",
         "chapters": [
             (
-                "Chapter 1",
-                "The orchard had been sold, but nobody had told the "
-                "apple trees, and so in September they fruited as if "
-                "nothing had changed.",
+                "CHAPTER 1. Loomings.",
+                "Call me Ishmael. "
+                "Some years ago—never mind how long precisely—"
+                "having little or no money in my purse",
+                "and nothing particular to interest me on shore"
+                "I thought I would sail about a little and see the watery part of the world. ",
                 False,
                 [],
             ),
             (
-                "Chapter 2",
-                "Elin came back for the harvest because her brother asked "
-                "her to, and because she had nowhere better to be.",
+                "CHAPTER 2. The Carpet-Bag.",
+                "I stuffed a shirt or two into my old carpet-bag,"
+                "tucked it under my arm, and started for Cape Horn and the Pacific",
                 False,
                 [],
             ),
             (
-                "Chapter 3",
-                "The new owner arrived on the last day of picking, with a "
-                "surveyor and a dog that ate every windfall it could find.",
+                "CHAPTER 3. The Spouter-Inn.",
+                "Entering that gable-ended Spouter-Inn"
+                "you found yourself in a wide, low, straggling entry with old-fashioned wainscots"
+                "reminding one of the bulwarks of some condemned old craft."
                 False,
                 [],
             ),
@@ -129,90 +127,31 @@ MANUSCRIPTS = [
 ]
 
 
-def get_or_create_publisher():
-    """Return the demo publisher, creating the account if it is missing.
-
-    Returns the user and True if it was created, False if it existed.
-    An existing account is left exactly as it is, including its password.
-    """
-    user = User.query.filter_by(email=DEMO_PUBLISHER["email"]).first()
-    if user:
-        print(f"Skipped account {user.email}: it already exists.")
-        return user, False
-
-    user = User(
-        name=DEMO_PUBLISHER["name"],
-        email=DEMO_PUBLISHER["email"],
-        press_name=DEMO_PUBLISHER["press_name"],
-    )
-    user.set_password(DEMO_PUBLISHER["password"])
-    db.session.add(user)
-    db.session.flush()
-    print(f"Created publisher account {user.email}.")
-    return user, True
-
-
 def create_manuscript(owner, data, days_ago):
-    """Create one demo manuscript with its chapters and notes."""
+    """Make one demo manuscript, with its chapters and notes."""
     uploaded_at = utc_now() - timedelta(days=days_ago)
     manuscript = Manuscript(
         title=data["title"],
         author_name=data["author_name"],
         genre=data["genre"],
         status=data["status"],
-        owner_id=owner.id,
+        owner=owner,
         uploaded_at=uploaded_at,
     )
+
     for number, chapter_data in enumerate(data["chapters"], start=1):
         title, content, is_read, notes = chapter_data
         chapter = Chapter(
             number=number, title=title, content=content, is_read=is_read
         )
-        for position, (body, was_edited) in enumerate(notes):
-            created_at = uploaded_at + timedelta(hours=number + position)
-            note = Note(body=body, created_at=created_at)
+
+        for body, was_edited in notes:
+            note = Note(body=body)
+            # Mark some notes as edited so the demo shows both kinds.
             if was_edited:
-                note.updated_at = created_at + timedelta(hours=2)
+                note.updated_at = utc_now()
             chapter.notes.append(note)
+
         manuscript.chapters.append(chapter)
+
     db.session.add(manuscript)
-
-
-def create_manuscripts(owner):
-    """Create any demo manuscripts the publisher does not already have."""
-    for days_ago, data in enumerate(MANUSCRIPTS, start=1):
-        existing = Manuscript.query.filter_by(
-            owner_id=owner.id, title=data["title"]
-        ).first()
-        if existing:
-            print(f"Skipped manuscript '{data['title']}': it already "
-                  "exists.")
-            continue
-        create_manuscript(owner, data, days_ago)
-        print(f"Created manuscript '{data['title']}' "
-              f"({data['status']}).")
-
-
-def print_login(created):
-    """Print the demo login details."""
-    print("\nDemo data ready. Log in at http://127.0.0.1:5001 with:\n")
-    print(f"  email:    {DEMO_PUBLISHER['email']}")
-    if created:
-        print(f"  password: {DEMO_PUBLISHER['password']}\n")
-    else:
-        print("  password: unchanged (account already existed; the seed "
-              f"password is {DEMO_PUBLISHER['password']})\n")
-
-
-def main():
-    """Add any missing demo data without touching existing rows."""
-    app = create_app()
-    with app.app_context():
-        owner, created = get_or_create_publisher()
-        create_manuscripts(owner)
-        db.session.commit()
-    print_login(created)
-
-
-if __name__ == "__main__":
-    main()
