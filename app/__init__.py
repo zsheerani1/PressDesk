@@ -66,8 +66,7 @@ def create_app():
 
     # ------------------------------------------------------------------
     # Helpers that make sure publishers only ever reach their own data.
-    # Each one returns 404 if the item doesn't exist OR belongs to
-    # somebody else, so nobody can tell other publishers' items exist.
+    # Each one returns 404 if the item doesn't exist or belongs to another publsiher.
     # ------------------------------------------------------------------
 
     def get_own_manuscript_or_404(manuscript_id):
