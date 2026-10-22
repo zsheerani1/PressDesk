@@ -174,33 +174,76 @@ python -m pytest
 [Say what the tests cover and add a screenshot of them passing.]
 
 Manual testing
-<!-- Do these on the live site in a private window. Fill in the Result column honestly. -->
-Test	Steps	Expected	Result
-Register	Fill in the form with new details	Account created, message shown	
-Duplicate email	Register with an existing email	Error message	
-Log in / out			
-Upload .txt	Upload samples/frankenstein.txt	[n] chapters	
-Upload .docx	Upload samples/alice-in-wonderland.docx	[n] chapters	
-Upload .pdf	Upload samples/alice-in-wonderland.pdf	[n] chapters	
-No headings	Upload samples/im-bernsteinwald.txt	1 chapter, "Full manuscript"	
-Empty file	Upload samples/empty.txt	Error: "The file you chose is empty."	
-Wrong file type	Upload a .png	Error message	
-Add / edit / delete note			
-Change status			
-Edit manuscript details			
-Delete manuscript		Confirmation page, then deleted	
-Another publisher's data	Visit another account's manuscript URL	404 page	
-Page that doesn't exist	Visit /manuscripts/9999	404 page	
-Back button	Use back after deleting	Nothing breaks	
-Mobile layout	Open on a phone	Layout fits the screen	
-Validators
-Check	Tool	Result
-HTML	W3C Markup Validator	
-CSS	W3C CSS Validator (Jigsaw)	
-JavaScript	JSHint	
-Python	flake8 (PEP8)	
-Accessibility	[e.g. Lighthouse or WAVE]	
-Bugs
+### Manual testing
+
+All tests were carried out on the deployed site in a private browser window.
+
+| Test | Steps | Expected | Result |
+|---|---|---|---|
+| Register | Click "Create account", fill in name, email, press name and password, submit | Account created; redirected to log in with "Your account has been created. Please log in." | |
+| Duplicate email | Register again with an email that already has an account | Error: "An account with that email already exists." | |
+| Invalid login | Log in with a wrong password | Error: "Invalid email or password." | |
+| Log in | Log in with correct details | Dashboard opens with "Welcome back, [name]." | |
+| Log out | Click "Log out" in the header | Returned to the home page with "You have been logged out." | |
+| Private pages need login | While logged out, visit `/dashboard` | Redirected to log in with "Please log in to see that page." | |
+| Upload .pdf | Upload `samples/frankenstein.pdf` | "Uploaded 'Frankenstein' — [n] chapters found." Opening letters kept as "Opening pages", then Chapters 1–24 | |
+| Upload .docx | Upload `samples/alice-in-wonderland.docx` | "[n] chapters found." Chapters named from the Heading 1 styles, e.g. "Down the Rabbit-Hole" | |
+| No headings | Upload `samples/im-bernsteinwald.txt` | Split into [n] parts of about 3,000 words ("Part 1", "Part 2"…); German characters (ä, ö, ü) display correctly | |
+| Empty file | Upload `samples/empty.txt` | Error: "The file you chose is empty." Nothing uploaded | |
+| Wrong file type | Upload a .png or .jpg | Error: "Only .docx, .txt and .pdf files can be uploaded." Nothing uploaded | |
+| File too large | Upload a file over 5 MB | Error: "The file is too large. The maximum size is 5 MB." | |
+| Drag and drop | Drag a sample file onto the upload area | Upload area highlights; file name shown under it | |
+| Upload progress | Upload a sample file | Progress bar shows, then "Splitting into chapters…" | |
+| Open manuscript | Open a manuscript with status "Received" | First chapter shown; status changes to "Reading" with a message | |
+| Chapter navigation | Use the chapter list and Previous / Next buttons | Correct chapter opens; Previous hidden on the first chapter, Next on the last | |
+| Mark chapter read | Mark a chapter as read, then unread | "'[chapter]' marked as read." / "…marked as unread." | |
+| Add note | Type a note on a chapter and save | "Note added to '[chapter]'." Note appears in the list | |
+| Empty note | Save a note with nothing in it | Error message; no note added | |
+| Edit note | Click "Edit" on a note, change it, save | "Your note was updated." Note shows as edited | |
+| Delete note | Click "Delete" on a note, then confirm | Confirmation page first, then "Your note was deleted." | |
+| Change status | Choose a new status and save | "'[title]' is now marked as [status]." Dashboard count updates | |
+| Edit manuscript details | Change title, author or genre and save | "'[title]' was updated." New details shown | |
+| Delete manuscript | Click "Delete", then confirm | Confirmation page showing chapter and note counts, then "'[title]' and all its chapters and notes were deleted." | |
+| Cancel delete | Click "Delete", then "Cancel" | Returned to the manuscript; nothing deleted | |
+| Filter by status | Click a status count on the dashboard | Only manuscripts with that status shown | |
+| Search | Search for a title or author name | Only matching manuscripts shown | |
+| Another publisher's data | Log in as a second account and visit the first account's manuscript URL | 404 page | |
+| Page that doesn't exist | Visit `/manuscripts/9999` | Custom 404 page | |
+| Back button | Delete a manuscript, then press the browser's back button | No crash; the deleted manuscript can't be opened | |
+| Demo account | Log in with the demo details from the README | Dashboard shows three demo manuscripts | |
+| Keyboard only | Use Tab and Enter to log in and open a manuscript | Focus outline always visible; everything reachable | |
+| Mobile layout | Open the site on a phone | Layout fits the screen with no sideways scrolling | |
+
+### Automated tests
+
+`tests/test_chapters.py` contains 5 pytest tests for chapter detection and
+splitting, run with `python -m pytest`.
+
+| Test | Checks | Result |
+|---|---|---|
+| `test_numbered_heading` | "Chapter 1" is a heading | |
+| `test_roman_numeral_heading` | "CHAPTER XII" is a heading | |
+| `test_sentence_is_not_heading` | "Chapter and verse, she said" is not a heading | |
+| `test_short_text_stays_whole` | A short text with no headings stays as "Full manuscript" | |
+| `test_long_text_is_split_into_parts` | A 10,000-word text with no headings is split into parts | |
+
+### Validators
+
+| Check | Tool | Result |
+|---|---|---|
+| HTML | [W3C Markup Validator](https://validator.w3.org/) | |
+| CSS | [W3C CSS Validator (Jigsaw)](https://jigsaw.w3.org/css-validator/) | |
+| JavaScript | [JSHint](https://jshint.com/) | |
+| Python | flake8 (PEP8) | |
+| Accessibility | [Lighthouse](https://developer.chrome.com/docs/lighthouse) (Chrome DevTools) | |
+
+### Bugs
+
+**Fixed**
+
+| Bug | Cause | Fix |
+|---|---|---|
+| Heroku release failed: "No module named 'psycopg'" | The app asked for the psycopg 3 PostgreSQL driver, but only psycopg2 was installed | Added
 
 Fixed
 
