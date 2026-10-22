@@ -3,7 +3,7 @@ __pycache__/
 *.sqlite3
 instance/
 .env
-env.py
+/env.py
 venv/
 .venv/
 .pytest_cache/
