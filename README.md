@@ -54,7 +54,7 @@ Desktop Wireframes:
 
 Mobile Wireframes:
 
-https://github.com/zsheerani1/PressDesk/blob/main/assets/screenshots/Lighthouse%20Create%20Account%20Mobile.png
+(assets/screenshots/Lighthouse%20Create%20Account%20Mobile.png)
 
 
 Show Image
