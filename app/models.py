@@ -116,6 +116,11 @@ class Chapter(db.Model):
         lazy=True,
     )
 
+    @property
+    def owner_id(self):
+        """Return the id of the publisher who owns this chapter."""
+        return self.manuscript.owner_id
+
 
 class Note(db.Model):
     """A publisher's note about one chapter."""
@@ -130,6 +135,11 @@ class Note(db.Model):
     created_at = db.Column(db.DateTime, default=utc_now, nullable=False)
     # Stays empty until the note is edited, so we can show "edited".
     updated_at = db.Column(db.DateTime, nullable=True)
+
+    @property
+    def owner_id(self):
+        """Return the id of the publisher who owns this note."""
+        return self.chapter.owner_id
 
     @property
     def is_edited(self):

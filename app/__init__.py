@@ -46,7 +46,11 @@ def create_app():
     csrf.init_app(app)
     login_manager.init_app(app)
 
-    from app.chapters import ManuscriptFileError, read_chapters
+    from app.chapters import (
+        TOO_LARGE_MESSAGE,
+        ManuscriptFileError,
+        read_chapters,
+    )
     from app.forms import (
         LoginForm,
         ManuscriptDetailsForm,
@@ -65,32 +69,23 @@ def create_app():
     )
 
     # ------------------------------------------------------------------
-    # Helpers that make sure publishers only ever reach their own data.
-    # Each one returns 404 if the item doesn't exist or belongs to another publisher.
-    # -------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
 
-    def get_own_manuscript_or_404(manuscript_id):
-        """Return the current publisher's manuscript, or abort with 404."""
-        manuscript = db.session.get(Manuscript, manuscript_id)
-        if manuscript is None or manuscript.owner_id != current_user.id:
-            abort(404)
-        return manuscript
+    def get_owned_or_404(model, item_id):
+        """Return the current publisher's Manuscript, Chapter or Note.
 
-    def get_own_chapter_or_404(chapter_id):
-        """Return a chapter from the publisher's own manuscript, or 404."""
-        chapter = db.session.get(Chapter, chapter_id)
-        if (chapter is None
-                or chapter.manuscript.owner_id != current_user.id):
+        Aborts with 404 if it doesn't exist or belongs to another
+        publisher, so publishers only ever reach their own data.
+        """
+        item = db.session.get(model, item_id)
+        if item is None or item.owner_id != current_user.id:
             abort(404)
-        return chapter
+        return item
 
-    def get_own_note_or_404(note_id):
-        """Return a note on the publisher's own manuscript, or 404."""
-        note = db.session.get(Note, note_id)
-        if (note is None
-                or note.chapter.manuscript.owner_id != current_user.id):
-            abort(404)
-        return note
+    def manuscript_url(manuscript):
+        """Return the web address of a manuscript's page."""
+        return url_for("view_manuscript", manuscript_id=manuscript.id)
 
     def chapter_url(chapter):
         """Return the web address of a chapter's page."""
@@ -124,18 +119,15 @@ def create_app():
             return redirect(url_for("dashboard"))
 
         form = LoginForm()
-
         if form.validate_on_submit():
-            email = form.email.data.lower()
-            user = User.query.filter_by(email=email).first()
+            user = User.query.filter_by(email=form.email.data.lower()).first()
             if user and user.check_password(form.password.data):
                 login_user(user, remember=True)
                 flash(f"Welcome back, {user.name}.", "success")
                 next_page = request.args.get("next")
-                if next_page and is_safe_url(next_page):
-                    return redirect(next_page)
-                return redirect(url_for("dashboard"))
-
+                if not is_safe_url(next_page):
+                    next_page = url_for("dashboard")
+                return redirect(next_page)
             flash("Invalid email or password.", "error")
 
         return render_template("auth/login.html", form=form)
@@ -147,24 +139,22 @@ def create_app():
             return redirect(url_for("dashboard"))
 
         form = RegisterForm()
-
         if form.validate_on_submit():
             email = form.email.data.lower()
             if User.query.filter_by(email=email).first():
                 flash("An account with that email already exists.", "error")
-                return render_template("auth/register.html", form=form)
-
-            new_user = User(
-                name=form.name.data,
-                email=email,
-                press_name=form.press_name.data,
-            )
-            new_user.set_password(form.password.data)
-            db.session.add(new_user)
-            db.session.commit()
-
-            flash("Your account has been created. Please log in.", "success")
-            return redirect(url_for("login"))
+            else:
+                user = User(
+                    name=form.name.data,
+                    email=email,
+                    press_name=form.press_name.data,
+                )
+                user.set_password(form.password.data)
+                db.session.add(user)
+                db.session.commit()
+                flash("Your account has been created. Please log in.",
+                      "success")
+                return redirect(url_for("login"))
 
         return render_template("auth/register.html", form=form)
 
@@ -186,44 +176,34 @@ def create_app():
         Shows a count for each status, and the list of manuscripts,
         filtered by status and searched by title or author if asked.
         """
-        own_manuscripts = Manuscript.query.filter_by(
-            owner_id=current_user.id
-        )
-
-        # Count how many manuscripts have each status.
-        counts = {status: 0 for status in MANUSCRIPT_STATUSES}
         rows = (
             db.session.query(Manuscript.status, func.count(Manuscript.id))
             .filter_by(owner_id=current_user.id)
             .group_by(Manuscript.status)
-            .all()
         )
-        for status, count in rows:
-            counts[status] = count
-        total = sum(counts.values())
+        counts = {status: 0 for status in MANUSCRIPT_STATUSES} | dict(rows)
 
-        # Apply the filter and search from the address bar, if any.
         status_filter = request.args.get("status", "")
-        search = request.args.get("q", "").strip()
-        query = own_manuscripts
-        if status_filter in MANUSCRIPT_STATUSES:
-            query = query.filter_by(status=status_filter)
-        else:
+        if status_filter not in MANUSCRIPT_STATUSES:
             status_filter = ""
+        search = request.args.get("q", "").strip()
+
+        query = Manuscript.query.filter_by(owner_id=current_user.id)
+        if status_filter:
+            query = query.filter_by(status=status_filter)
         if search:
             pattern = f"%{search}%"
             query = query.filter(or_(
                 Manuscript.title.ilike(pattern),
                 Manuscript.author_name.ilike(pattern),
             ))
-        manuscripts = query.order_by(Manuscript.uploaded_at.desc()).all()
 
         return render_template(
             "dashboard.html",
             upload_form=upload_form,
             counts=counts,
-            total=total,
-            manuscripts=manuscripts,
+            total=sum(counts.values()),
+            manuscripts=query.order_by(Manuscript.uploaded_at.desc()).all(),
             statuses=MANUSCRIPT_STATUSES,
             status_filter=status_filter,
             search=search,
@@ -244,44 +224,36 @@ def create_app():
         which shows a progress bar and expects a JSON reply.
         """
         form = UploadForm()
-        errors = []
         chapters = []
-
         if form.validate_on_submit():
             try:
                 chapters = read_chapters(form.manuscript_file.data)
             except ManuscriptFileError as error:
-                errors.append(str(error))
-        else:
-            for field_errors in form.errors.values():
-                errors.extend(field_errors)
+                form.manuscript_file.errors.append(str(error))
 
+        errors = [message for messages in form.errors.values()
+                  for message in messages]
         if errors:
             if wants_json():
                 return jsonify(ok=False, errors=errors), 400
-            for message in errors:
-                flash(message, "error")
             return render_dashboard(form, status_code=400)
 
         manuscript = Manuscript(
             title=form.title.data,
             author_name=form.author_name.data,
             genre=form.genre.data,
-            status="received",
             owner_id=current_user.id,
-        )
-        for number, (title, content) in enumerate(chapters, start=1):
-            manuscript.chapters.append(
+            chapters=[
                 Chapter(number=number, title=title, content=content)
-            )
+                for number, (title, content) in enumerate(chapters, start=1)
+            ],
+        )
         db.session.add(manuscript)
         db.session.commit()
 
         word = "chapter" if len(chapters) == 1 else "chapters"
-        flash(
-            f"Uploaded '{manuscript.title}' — {len(chapters)} {word} found.",
-            "success",
-        )
+        flash(f"Uploaded '{manuscript.title}' — {len(chapters)} {word} found.",
+              "success")
         if wants_json():
             return jsonify(ok=True, redirect=url_for("dashboard"))
         return redirect(url_for("dashboard"))
@@ -300,28 +272,19 @@ def create_app():
         if manuscript.status == "received":
             manuscript.status = "reading"
             db.session.commit()
-            flash(
-                f"'{manuscript.title}' is now marked as Reading.",
-                "success",
-            )
+            flash(f"'{manuscript.title}' is now marked as Reading.", "success")
 
-        # Work out the chapters either side of this one, for the
-        # Previous / Next buttons.
-        position = previous_chapter = next_chapter = None
-        if chapter is not None:
-            chapters = manuscript.chapters
-            index = chapters.index(chapter)
-            position = index + 1
-            if index > 0:
-                previous_chapter = chapters[index - 1]
-            if index < len(chapters) - 1:
-                next_chapter = chapters[index + 1]
+        # The chapters either side of this one, for Previous / Next.
+        chapters = manuscript.chapters
+        index = chapters.index(chapter) if chapter else 0
+        previous_chapter = chapters[index - 1] if index > 0 else None
+        next_chapter = chapters[index + 1] if index + 1 < len(chapters) else None
 
         return render_template(
             "manuscript.html",
             manuscript=manuscript,
             chapter=chapter,
-            position=position,
+            position=index + 1,
             previous_chapter=previous_chapter,
             next_chapter=next_chapter,
             status_form=StatusForm(status=manuscript.status),
@@ -332,7 +295,7 @@ def create_app():
     @login_required
     def view_manuscript(manuscript_id):
         """Show a manuscript with its first chapter open."""
-        manuscript = get_own_manuscript_or_404(manuscript_id)
+        manuscript = get_owned_or_404(Manuscript, manuscript_id)
         first_chapter = manuscript.chapters[0] if manuscript.chapters else None
         return render_chapter_page(manuscript, first_chapter)
 
@@ -340,32 +303,29 @@ def create_app():
     @login_required
     def view_chapter(manuscript_id, chapter_id):
         """Show a manuscript with the chosen chapter open."""
-        manuscript = get_own_manuscript_or_404(manuscript_id)
-        chapter = get_own_chapter_or_404(chapter_id)
-        if chapter.manuscript_id != manuscript.id:
+        chapter = get_owned_or_404(Chapter, chapter_id)
+        if chapter.manuscript_id != manuscript_id:
             abort(404)
-        return render_chapter_page(manuscript, chapter)
+        return render_chapter_page(chapter.manuscript, chapter)
 
     @app.route("/manuscripts/<int:manuscript_id>/status", methods=["POST"])
     @login_required
     def change_status(manuscript_id):
         """Change a manuscript's status."""
-        manuscript = get_own_manuscript_or_404(manuscript_id)
+        manuscript = get_owned_or_404(Manuscript, manuscript_id)
         form = StatusForm()
         if form.validate_on_submit():
             manuscript.status = form.status.data
             db.session.commit()
-            flash(
-                f"'{manuscript.title}' is now marked as "
-                f"{manuscript.status.capitalize()}.",
-                "success",
-            )
+            flash(f"'{manuscript.title}' is now marked as "
+                  f"{manuscript.status.capitalize()}.", "success")
         else:
             flash("Please choose a valid status.", "error")
+
         # Go back to the chapter the publisher was reading, if we know it.
-        back = request.form.get("back", "")
+        back = request.form.get("back")
         if not is_safe_url(back):
-            back = url_for("view_manuscript", manuscript_id=manuscript.id)
+            back = manuscript_url(manuscript)
         return redirect(back)
 
     @app.route(
@@ -374,7 +334,7 @@ def create_app():
     @login_required
     def edit_manuscript(manuscript_id):
         """Edit a manuscript's title, author and genre."""
-        manuscript = get_own_manuscript_or_404(manuscript_id)
+        manuscript = get_owned_or_404(Manuscript, manuscript_id)
         form = ManuscriptDetailsForm(obj=manuscript)
 
         if form.validate_on_submit():
@@ -383,9 +343,7 @@ def create_app():
             manuscript.genre = form.genre.data
             db.session.commit()
             flash(f"'{manuscript.title}' was updated.", "success")
-            return redirect(
-                url_for("view_manuscript", manuscript_id=manuscript.id)
-            )
+            return redirect(manuscript_url(manuscript))
 
         return render_template(
             "manuscript_edit.html", form=form, manuscript=manuscript
@@ -400,14 +358,13 @@ def create_app():
 
         Its chapters and notes are deleted with it.
         """
-        manuscript = get_own_manuscript_or_404(manuscript_id)
+        manuscript = get_owned_or_404(Manuscript, manuscript_id)
 
         if request.method == "POST":
-            title = manuscript.title
             db.session.delete(manuscript)
             db.session.commit()
-            flash(f"'{title}' and all its chapters and notes were deleted.",
-                  "success")
+            flash(f"'{manuscript.title}' and all its chapters and notes "
+                  "were deleted.", "success")
             return redirect(url_for("dashboard"))
 
         return render_template(
@@ -419,12 +376,7 @@ def create_app():
                 f"{manuscript.note_count} notes, will be permanently "
                 "deleted."
             ),
-            action_url=url_for(
-                "delete_manuscript", manuscript_id=manuscript.id
-            ),
-            cancel_url=url_for(
-                "view_manuscript", manuscript_id=manuscript.id
-            ),
+            cancel_url=manuscript_url(manuscript),
         )
 
     # ------------------------------------------------------------------
@@ -435,7 +387,7 @@ def create_app():
     @login_required
     def mark_chapter(chapter_id):
         """Mark a chapter as read or unread."""
-        chapter = get_own_chapter_or_404(chapter_id)
+        chapter = get_owned_or_404(Chapter, chapter_id)
         chapter.is_read = request.form.get("read") == "yes"
         db.session.commit()
         state = "read" if chapter.is_read else "unread"
@@ -446,7 +398,7 @@ def create_app():
     @login_required
     def add_note(chapter_id):
         """Add a note to a chapter."""
-        chapter = get_own_chapter_or_404(chapter_id)
+        chapter = get_owned_or_404(Chapter, chapter_id)
         form = NoteForm()
 
         if form.validate_on_submit():
@@ -455,8 +407,6 @@ def create_app():
             flash(f"Note added to '{chapter.title}'.", "success")
             return redirect(chapter_url(chapter))
 
-        for message in form.body.errors:
-            flash(message, "error")
         return render_chapter_page(
             chapter.manuscript, chapter, note_form=form, status_code=400
         )
@@ -465,7 +415,7 @@ def create_app():
     @login_required
     def edit_note(note_id):
         """Edit a note."""
-        note = get_own_note_or_404(note_id)
+        note = get_owned_or_404(Note, note_id)
         form = NoteForm(obj=note)
 
         if form.validate_on_submit():
@@ -475,15 +425,13 @@ def create_app():
             flash("Your note was updated.", "success")
             return redirect(chapter_url(note.chapter))
 
-        for message in form.body.errors:
-            flash(message, "error")
         return render_template("note_edit.html", form=form, note=note)
 
     @app.route("/notes/<int:note_id>/delete", methods=["GET", "POST"])
     @login_required
     def delete_note(note_id):
         """Ask for confirmation, then delete a note."""
-        note = get_own_note_or_404(note_id)
+        note = get_owned_or_404(Note, note_id)
         chapter = note.chapter
 
         if request.method == "POST":
@@ -492,14 +440,11 @@ def create_app():
             flash("Your note was deleted.", "success")
             return redirect(chapter_url(chapter))
 
-        preview = note.body if len(note.body) <= 120 else (
-            note.body[:120] + "…"
-        )
+        preview = note.body[:120] + ("…" if len(note.body) > 120 else "")
         return render_template(
             "confirm_delete.html",
             heading="Delete this note?",
             message=f"Your note on '{chapter.title}': \"{preview}\"",
-            action_url=url_for("delete_note", note_id=note.id),
             cancel_url=chapter_url(chapter),
         )
 
@@ -521,10 +466,9 @@ def create_app():
     @app.errorhandler(413)
     def file_too_large(error):
         """Handle uploads far bigger than the size limit."""
-        message = "The file is too large. The maximum size is 5 MB."
         if wants_json():
-            return jsonify(ok=False, errors=[message]), 413
-        flash(message, "error")
+            return jsonify(ok=False, errors=[TOO_LARGE_MESSAGE]), 413
+        flash(TOO_LARGE_MESSAGE, "error")
         return redirect(url_for("dashboard"))
 
     @app.errorhandler(404)
@@ -542,7 +486,7 @@ def create_app():
 
 
 def is_safe_url(target):
-    """Allow only relative next URLs on this site."""
+    """Allow only relative URLs on this site."""
     if not target or "\\" in target or not target.startswith("/"):
         return False
     parsed = urlparse(target)

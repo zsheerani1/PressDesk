@@ -11,7 +11,7 @@ from wtforms import (
 )
 from wtforms.validators import DataRequired, Email, Length
 
-from app.chapters import MAX_FILE_SIZE
+from app.chapters import MAX_FILE_SIZE, TOO_LARGE_MESSAGE
 from app.models import MANUSCRIPT_STATUSES
 
 
@@ -20,38 +20,31 @@ def strip_whitespace(value):
     return value.strip() if isinstance(value, str) else value
 
 
+def text_field(label, *validators):
+    """A required text box that ignores spaces around what is typed."""
+    return StringField(
+        label,
+        filters=[strip_whitespace],
+        validators=[DataRequired(), *validators],
+    )
+
+
 class RegisterForm(FlaskForm):
     """Registration form for a publisher."""
 
-    name = StringField(
-        "Your name",
-        filters=[strip_whitespace],
-        validators=[DataRequired(), Length(min=2, max=120)],
-    )
-    email = StringField(
-        "Email",
-        filters=[strip_whitespace],
-        validators=[DataRequired(), Email(), Length(max=255)],
-    )
+    name = text_field("Your name", Length(min=2, max=120))
+    email = text_field("Email", Email(), Length(max=255))
     password = PasswordField(
         "Password", validators=[DataRequired(), Length(min=8, max=128)]
     )
-    press_name = StringField(
-        "Press name",
-        filters=[strip_whitespace],
-        validators=[DataRequired(), Length(max=120)],
-    )
+    press_name = text_field("Press name", Length(max=120))
     submit = SubmitField("Create account")
 
 
 class LoginForm(FlaskForm):
     """Login form for a publisher."""
 
-    email = StringField(
-        "Email",
-        filters=[strip_whitespace],
-        validators=[DataRequired(), Email(), Length(max=255)],
-    )
+    email = text_field("Email", Email(), Length(max=255))
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Log in")
 
@@ -59,21 +52,9 @@ class LoginForm(FlaskForm):
 class ManuscriptDetailsForm(FlaskForm):
     """The title, author and genre of a manuscript."""
 
-    title = StringField(
-        "Title",
-        filters=[strip_whitespace],
-        validators=[DataRequired(), Length(max=200)],
-    )
-    author_name = StringField(
-        "Author name",
-        filters=[strip_whitespace],
-        validators=[DataRequired(), Length(max=120)],
-    )
-    genre = StringField(
-        "Genre",
-        filters=[strip_whitespace],
-        validators=[DataRequired(), Length(max=80)],
-    )
+    title = text_field("Title", Length(max=200))
+    author_name = text_field("Author name", Length(max=120))
+    genre = text_field("Genre", Length(max=80))
     submit = SubmitField("Save changes")
 
 
@@ -88,10 +69,7 @@ class UploadForm(ManuscriptDetailsForm):
                 ["docx", "txt", "pdf"],
                 "Only .docx, .txt and .pdf files can be uploaded.",
             ),
-            FileSize(
-                max_size=MAX_FILE_SIZE,
-                message="The file is too large. The maximum size is 5 MB.",
-            ),
+            FileSize(max_size=MAX_FILE_SIZE, message=TOO_LARGE_MESSAGE),
         ],
     )
     submit = SubmitField("Upload manuscript")
@@ -116,11 +94,7 @@ class NoteForm(FlaskForm):
         filters=[strip_whitespace],
         validators=[
             DataRequired("Please write something in your note."),
-            Length(
-                min=1,
-                max=2000,
-                message="Notes must be between 1 and 2000 characters.",
-            ),
+            Length(max=2000, message="Notes can be up to 2000 characters."),
         ],
     )
     submit = SubmitField("Save note")
