@@ -9,6 +9,7 @@ Show Image
 Contents
 Rationale
 User stories
+Wireframes
 UX design
 Features
 Data schema
