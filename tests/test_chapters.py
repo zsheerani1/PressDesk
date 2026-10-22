@@ -12,6 +12,7 @@ def test_roman_numeral_heading():
 def test_sentence_is_not_heading():
     assert not is_chapter_heading("Chapter and verse, she said")
 
+
 def test_short_text_stays_whole():
     assert split_into_parts("A short story.") == [
         ("Full manuscript", "A short story.")

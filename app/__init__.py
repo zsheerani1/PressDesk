@@ -278,7 +278,8 @@ def create_app():
         chapters = manuscript.chapters
         index = chapters.index(chapter) if chapter else 0
         previous_chapter = chapters[index - 1] if index > 0 else None
-        next_chapter = chapters[index + 1] if index + 1 < len(chapters) else None
+        next_chapter = chapters[index + 1] if index + \
+            1 < len(chapters) else None
 
         return render_template(
             "manuscript.html",

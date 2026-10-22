@@ -4,7 +4,8 @@ The file is read in memory only; nothing is saved to disk.
 
 A new chapter starts at:
 - any line that starts with "Chapter" followed by a number, for example
-  "Chapter 1", "Chapter One", "CHAPTER 3: The Ferry" or "Chapter XII" for example;
+  "Chapter 1", "Chapter One", "CHAPTER 3: The Ferry" or "Chapter XII"
+  for example;
 - in .docx files, any paragraph styled as "Heading 1".
 
 PDF files have no heading styles, so they are split on "Chapter" lines
@@ -50,6 +51,8 @@ class ManuscriptFileError(Exception):
     """
 
 # Manuscripts with no chapter headings are split into parts of about
+
+
 # this many words, so the reader doesn't get one very long page.
 WORDS_PER_PART = 3000
 
@@ -88,6 +91,7 @@ def split_into_parts(text):
         for number, part in enumerate(parts, start=1)
     ]
 
+
 def is_chapter_heading(line):
     """Return True if a line of text looks like a chapter heading."""
     line = line.strip()
@@ -113,10 +117,9 @@ def split_into_chapters(paragraphs):
         (title, "\n".join(lines).strip()) for title, lines in chapters
     ]
 
-    # Drop the opening pages if there was nothing before the first heading.
     if not chapters[0][1]:
         chapters.pop(0)
-        
+
         # No headings at all: split long texts into parts instead.
     if len(chapters) == 1 and chapters[0][0] == "Opening pages":
         return split_into_parts(chapters[0][1])

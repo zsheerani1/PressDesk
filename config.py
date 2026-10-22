@@ -1,7 +1,7 @@
 import os
 
-   # Load secret values from env.py when running locally.
-   # env.py is in .gitignore, so it's never uploaded.
+#  Load secret values from env.py when running locally.
+#  env.py is in .gitignore, so it's never uploaded.
 try:
     import env
 except ImportError:
