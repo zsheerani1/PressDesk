@@ -54,7 +54,7 @@ Desktop Wireframes:
 
 Mobile Wireframes:
 
-(assets/screenshots/Lighthouse%20Create%20Account%20Mobile.png)
+![Mobile Wireframes](assets/screenshots/Lighthouse%20Create%20Account%20Mobile.png)
 
 
 Show Image
