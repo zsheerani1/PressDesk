@@ -219,11 +219,13 @@ splitting, run with `python -m pytest`.
 
 | Test | Checks | Result |
 |---|---|---|
-| `test_numbered_heading` | "Chapter 1" is a heading | |
-| `test_roman_numeral_heading` | "CHAPTER XII" is a heading | |
-| `test_sentence_is_not_heading` | "Chapter and verse, she said" is not a heading | |
-| `test_short_text_stays_whole` | A short text with no headings stays as "Full manuscript" | |
-| `test_long_text_is_split_into_parts` | A 10,000-word text with no headings is split into parts | |
+| `test_numbered_heading` | "Chapter 1" is a heading | Pass |
+| `test_roman_numeral_heading` | "CHAPTER XII" is a heading | Pass |
+| `test_sentence_is_not_heading` | "Chapter and verse, she said" is not a heading | Pass |
+| `test_short_text_stays_whole` | A short text with no headings stays as "Full manuscript" | Pass |
+| `test_long_text_is_split_into_parts` | A 10,000-word text with no headings is split into parts | Pass |
+
+![All 5 tests passing](docs/screenshots/pytest.png)
 
 ### Validators
 
