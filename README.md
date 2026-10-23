@@ -236,21 +236,18 @@ for as many people as possible, including keyboard and screen reader users.
 
 ### Register and log in
 
-[Description] Show Image
+![Register](assets/screenshots/feature-register.png)
+
+![Log in](assets/screenshots/feature-log-in.png)
 
 ### Dashboard
 
-[Status counts, filter, search.]
+[Dashboard](assets/screenshots/feature-dashboard.png)
 
-### Upload a manuscript
+### Status
 
-[Drag and drop, progress bar, works without JavaScript, file checks.]
+![Status](assets/screenshots/feature-status.png)
 
-### Read by chapter
-
-[Chapter list, previous/next, mark as read.]
-
-### Long manuscripts split into parts
 
 ### Notes
 [Add, edit, delete.]
