@@ -213,23 +213,12 @@ system fonts as fallbacks if they fail to load.
 PressDesk is a reading tool, so it was designed to be comfortable and usable
 for as many people as possible, including keyboard and screen reader users.
 
-- **Readable font:** body text uses Atkinson Hyperlegible, designed by the
-  Braille Institute for readers with low vision. Chapter text is set larger,
-  with generous line spacing and a limited line length for long reading.
-- **Colour contrast:** text and background colours were chosen for strong
-  contrast, and checked with Lighthouse.
-- **Never colour alone:** every status tag shows its name as text as well as
-  its colour, so it can be understood by people who can't tell the colours
-  apart.
-- **Visible focus:** links, buttons and the upload area show a clear outline
-  when reached with the keyboard (`:focus-visible`), so keyboard users can
-  always see where they are.
-- **Labelled forms:** every form field has a visible `<label>`, so screen
-  readers announce what each field is for and clicking the label selects the
-  field.
-- **Keyboard-friendly upload:** the drag-and-drop area is a label for a normal
-  file input, so it can be reached with Tab and opened with Enter, and it
-  still works if JavaScript is turned off.
+- **Readable font:** body text uses Atkinson Hyperlegible, designed by the Braille Institute for readers with low vision. Chapter text is set larger, with generous line spacing and a limited line length for long reading.
+- **Colour contrast:** text and background colours were chosen for strong contrast, and checked with Lighthouse.
+- **Never colour alone:** every status tag shows its name as text as well as its colour, so it can be understood by people who can't tell the colours apart.
+- **Visible focus:** links, buttons and the upload area show a clear outline when reached with the keyboard (`:focus-visible`), so keyboard users can always see where they are.
+- **Labelled forms:** every form field has a visible `<label>`, so screen readers announce what each field is for and clicking the label selects the field.
+- **Keyboard-friendly upload:** the drag-and-drop area is a label for a normal file input, so it can be reached with Tab and opened with Enter, and it still works if JavaScript is turned off.
 
 ## Features
 
@@ -298,21 +287,20 @@ chapter_id	Integer	Foreign key → Chapter
 Relationships: one user has many manuscripts; one manuscript has many chapters; one chapter has many notes. Deleting a manuscript deletes its chapters and notes.
 
 ## Security
-Secret keys and the database URL are kept in environment variables (env.py locally, which is in .gitignore; Config Vars on Heroku). They are never committed.
-DEBUG is off unless explicitly set to "True", and is off on the live site.
-Passwords are hashed, never stored as plain text.
-All manuscript, chapter and note pages require login.
-Every item is checked against the logged-in publisher, and other publishers' items return a 404.
-All forms are protected against CSRF.
-Redirects after login only go to pages on this site.
-Uploads are limited to 5 MB and to .docx, .txt and .pdf files.
+- Secret keys and the database URL are kept in environment variables (env.py locally, which is in .gitignore; Config Vars on Heroku). They are never committed.
+- DEBUG is off unless explicitly set to "True", and is off on the live site.
+- Passwords are hashed, never stored as plain text.
+- All manuscript, chapter and note pages require login.
+- Every item is checked against the logged-in publisher, and other publishers' items return a 404.
+- All forms are protected against CSRF.
+- Redirects after login only go to pages on this site.
+- Uploads are limited to 5 MB and to .docx, .txt and .pdf files.
 
 ## Technologies
 Languages: Python, HTML, CSS, JavaScript
 Framework and libraries: Flask, Flask-SQLAlchemy, Flask-Migrate, Flask-Login, Flask-WTF, python-docx, pypdf, Gunicorn
 Database: SQLite locally, PostgreSQL on Heroku
-Tools: Git, GitHub, VS Code, Heroku, pytest
-[Add any design tools you used, e.g. for wireframes]
+Tools: Git, GitHub, VS Code, Heroku, pytest, dbdiagram.
 
 ## Testing
 
@@ -323,7 +311,7 @@ Run with:
 bash
 python -m pytest
 
-[Say what the tests cover and add a screenshot of them passing.]
+The automated tests in `tests/test_chapters.py` cover the part of PressDesk with the most logic: working out where chapters start and splitting text into readable sections. These functions in `app/chapters.py` take text in and give results out without needing the database or a browser, so they can be tested quickly and reliably.
 
 ### Manual testing
 
@@ -376,6 +364,7 @@ splitting, run with `python -m pytest`.
 | `test_short_text_stays_whole` | A short text with no headings stays as "Full manuscript" | Pass |
 | `test_long_text_is_split_into_parts` | A 10,000-word text with no headings is split into parts | Pass |
 
+Together these check both sides of heading detection (real headings are found, and ordinary sentences are left alone) and both outcomes when there are no headings (short texts stay whole, long texts are split into parts).
 
 ![Pytest PNG](assets/screenshots/pytest.png)
 
@@ -410,19 +399,64 @@ splitting, run with `python -m pytest`.
 
 ![Lighthouse Home Page Mobile](assets/screenshots/lighthouse-home-page-mobile.png)
 
-### Sample files
-
 ### Bugs
 
-**Fixed**
+### Fixed bugs
+
+**App features**
 
 | Bug | Cause | Fix |
 |---|---|---|
-| Heroku release failed: "No module named 'psycopg'" | The app asked for the psycopg 3 PostgreSQL driver, but only psycopg2 was installed | Added
+| Long manuscripts with no chapter headings appeared as one very long page. *Im Bernsteinwald* (about 27,500 words) loaded as a single "Full manuscript", which meant a huge amount of scrolling. | When no headings were found, all the text was kept as one chapter. | Added `split_into_parts()` in `app/chapters.py`. Long texts with no headings are now split into parts of about 3,000 words ("Part 1", "Part 2"…), breaking only at a blank line or the end of a sentence. Short texts still stay as one "Full manuscript". Two automated tests were added for this. |
 
-### Fixed bugs
-Bug	Fix
-[e.g. syntax error in demo data]	[what you changed]
+**Sample files**
+
+| Bug | Cause | Fix |
+|---|---|---|
+| The German sample couldn't be uploaded. | It was saved as `IM BERNSTEINWALD`, with capitals, a space and no file extension, so the app rejected it as an unsupported file type. | Renamed it to `im-bernsteinwald.txt`. |
+| Project Gutenberg books created lots of near-empty chapters. | Each line of the contents list at the start of the book ("CHAPTER I.", "CHAPTER II."…) looks exactly like a chapter heading. | Removed the contents lists and the Gutenberg licence text from the sample files. Recorded as a known limitation below. |
+| The Word sample didn't test Word heading styles. | The chapter titles in *Alice in Wonderland* were plain text, and the "CHAPTER I." lines were still there, so the app found the chapters through the "Chapter" check instead. | Deleted the "CHAPTER I." lines and styled each chapter name (e.g. "Down the Rabbit-Hole") as Heading 1, so the file now proves Heading 1 detection works on its own. |
+
+**Demo data (`seed.py`)**
+
+| Bug | Cause | Fix |
+|---|---|---|
+| `seed.py` stopped with "SyntaxError: invalid syntax. Perhaps you forgot a comma?" | Brackets and commas had been lost and duplicated while replacing the demo manuscripts with public-domain extracts. | Rebuilt the `MANUSCRIPTS` list and removed leftover closing brackets from the old version. |
+| Running the seed did nothing, and the demo login failed on the live site. | The `main()` function and the `if __name__ == "__main__":` lines had been deleted while editing, so the script exited without running. | Restored them. The seed now prints what it creates. |
+| The seed crashed with "ValueError: too many values to unpack (expected 4, got 6)". | Commas between the pieces of each chapter's text split one paragraph into several separate items. Python joins strings that sit next to each other, so the pieces shouldn't have commas between them. | Removed the commas so each paragraph is a single string. The seed then created the demo account and all three manuscripts. |
+
+**Deployment**
+
+| Bug | Cause | Fix |
+|---|---|---|
+| Heroku deploy failed at the release phase: "No module named 'psycopg'". | The app needed the psycopg 3 PostgreSQL driver, but only `psycopg2-binary` was in `requirements.txt`. | Installed `psycopg[binary]` and updated `requirements.txt`. |
+| Heroku deploy failed again: "Can't find Python file migrations/env.py". | The `.gitignore` rule `env.py`, meant to keep the secret settings file private, also matched `migrations/env.py`, so it was never uploaded. | Changed the rule to `/env.py` so it only ignores the file at the top of the project, then committed `migrations/env.py`. |
+
+**Code quality**
+
+| Bug | Cause | Fix |
+|---|---|---|
+| flake8 reported PEP8 problems in `app/__init__.py`, `app/chapters.py`, `config.py`, `env_example.py` and `tests/test_chapters.py`. | Lines over 79 characters, wrong numbers of blank lines, indented comments, trailing spaces and missing final newlines. | Fixed with `autopep8` and by hand. flake8 now reports no errors. |
+| JSHint showed 17 warnings for `const`. | JSHint checks against older JavaScript by default. | Added `/* jshint esversion: 6 */` to the top of `script.js`. |
+
+**Documentation**
+
+| Bug | Cause | Fix |
+|---|---|---|
+| Some README images didn't show. | Links pointed to an old `docs/screenshots/` folder, and file names with brackets, like `flake8-(pep8).png`, broke the Markdown links. | Updated all links to `assets/screenshots/` and renamed files to lowercase, hyphenated names with no spaces or brackets. |
+
+### Known bugs and limitations
+
+| Issue | Reason it's been left |
+|---|---|
+| A short line in the middle of a chapter that starts with "Chapter" and a number, e.g. "Chapter 3 had been the hardest to write.", would be treated as a heading. | Rare in real manuscripts. Checking the line length and the word after "Chapter" already catches most cases, such as "Chapter and verse". |
+| *Frankenstein*'s four opening letters are kept together as one "Opening pages" section, not split. | Only "Chapter" headings are recognised. Recognising "Letter" headings is listed under Future features. |
+| A contents list at the start of a book creates near-empty chapters. | Contents lines look the same as headings. Publishers are advised to remove the contents list before uploading; detecting it automatically is a future feature. |
+| In files where each line is hard-wrapped, a part can end at a full stop in the middle of a paragraph rather than at the end of one. | Parts still never cut a sentence in half, which keeps them readable. |
+| The last part of a long manuscript can be much shorter than the others. | It holds whatever text remains after the full-sized parts. |
+| Manuscripts uploaded before parts were added aren't split. | Splitting happens on upload. Deleting and re-uploading the manuscript splits it. |
+| Success messages disappear after 4 seconds, which may be too quick for some readers. | Error messages stay on screen. Making all messages dismissible by hand would be a future improvement. |
+| Scanned PDFs can't be read. | They contain pictures of pages, not text. The app explains this and asks for a .docx or .txt version instead. |
 
 ### Known bugs
 
@@ -431,7 +465,116 @@ A short line starting "Chapter 3 had been…" in the middle of a chapter would b
 Contents lists at the start of a book create near-empty chapters	[your explanation]
 
 ## Deployment
-<!-- Write these steps as you actually do them, so they're accurate. -->
+## Deployment
+
+PressDesk is deployed on [Heroku](https://www.heroku.com/) with a Heroku
+Postgres database.
+
+**Live site:** https://pressdesk-23c91ab98baa.herokuapp.com/
+
+### Files Heroku needs
+
+| File | Purpose |
+|---|---|
+| `requirements.txt` | Python packages to install, including `gunicorn` (web server) and `psycopg` (PostgreSQL driver). Created with `pip freeze > requirements.txt`. |
+| `.python-version` | The Python version Heroku should use (`3.14`). |
+| `Procfile` | Tells Heroku how to start the app and what to run before each release (see below). |
+
+The `Procfile` contains:
+web: gunicorn run:app
+release: flask --app run db upgrade
+
+
+- `web` starts the app with Gunicorn, using the `app` object in `run.py`.
+- `release` runs the database migrations before each new version goes live,
+  so the database tables always match the models.
+
+### Environment variables
+
+Secret values are never committed. Locally they are kept in `env.py`, which is
+listed in `.gitignore`; `env_example.py` shows which settings are needed. On
+Heroku they are set as Config Vars:
+
+| Key | Value |
+|---|---|
+| `SECRET_KEY` | A long random string, different from the one used locally |
+| `DATABASE_URL` | Added automatically by Heroku Postgres |
+| `DEBUG` | `False` |
+
+`config.py` reads these values and converts Heroku's `postgres://` database
+address to the `postgresql://` form that SQLAlchemy expects.
+
+### Steps
+
+1. Prepare the project and push it to GitHub:
+```bash
+   pip freeze > requirements.txt
+   echo "3.14" > .python-version
+   git add requirements.txt .python-version Procfile
+   git commit -m "Prepare app for Heroku deployment"
+   git push
+```
+2. On the [Heroku dashboard](https://dashboard.heroku.com/), click
+   **New → Create new app**, enter a name and choose the **Europe** region.
+3. On the **Resources** tab, add the **Heroku Postgres** add-on
+   (Essential-0 plan). This creates the database and sets `DATABASE_URL`.
+4. On the **Settings** tab, click **Reveal Config Vars** A new secret key can be generated with:
+```bash
+   python -c "import secrets; print(secrets.token_hex(32))"
+```
+5. On the **Deploy** tab, choose **GitHub** as the deployment method, search
+   for the `PressDesk` repository and click **Connect**.
+6. Under **Manual deploy**, choose the `main` branch and click
+   **Deploy Branch**. Heroku installs the packages, runs the release command
+   (database migrations) and starts the app.
+7. Click **Open app** to view the live site.
+
+### Adding the demo data
+
+The demo account and manuscripts are added with the seed script, using the
+[Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli):
+
+```bash
+brew install heroku/brew/heroku
+heroku login
+heroku run python seed.py -a pressdesk
+```
+
+The script prints each account and manuscript it creates. It is safe to run
+more than once, because anything that already exists is skipped.
+
+### Demo account
+
+The live site includes a demo publisher account with sample manuscripts. It
+holds sample data only.
+
+- **Email:** demo@pressdesk.example.com
+- **Password:** DemoPress2026!
+
+### Checking the deployed version
+
+After each deploy:
+
+- The Heroku build and release steps showed green ticks, and the **Activity**
+  tab showed "Deployed".
+- The live site was tested in a private browser window using the full
+  [manual testing](#manual-testing) table: registering, logging in, uploading
+  each sample file, notes, statuses, deleting and the error pages.
+- The results matched the local development version, including the same
+  chapter counts for each sample file.
+- Problems found during deployment are listed under [Fixed bugs](#fixed-bugs).
+
+### Forking or cloning
+
+To make your own copy of the project:
+
+- **Fork:** on the GitHub repository page, click **Fork** to create a copy in
+  your own account.
+- **Clone:** click **Code**, copy the HTTPS address, and run:
+```bash
+  git clone https://github.com/zsheerani1/PressDesk.git
+```
+  Then follow [Running locally](#running-locally).
 
 ### Heroku
 Create a new app on Heroku.
@@ -467,18 +610,59 @@ Optionally add demo data: python seed.py
 Start the app: python run.py
 
 ## Development notes
-<!-- Be accurate about how the project was developed. -->
+The app is built with Flask and was developed in VS Code.
 
-[e.g. PressDesk was developed locally before version control was set up and moved into this repository on 22 October 2026. Changes since then are committed individually.]
+### Version control
+
+The project was developed locally for several weeks before version control was set up. It was moved into this repository on 22 October 2026, so the first commit contains the application as it stood at that point. Every change since then, including new features, bug fixes, testing, deployment and documentation, has been committed separately with a message describing it.
+
+### Changes made during testing and deployment
+
+Testing the deployed app with real books led to several improvements:
+
+- Public-domain books from Project Gutenberg replaced the original sample files, which exposed issues with contents lists and Word heading styles.
+- Testing a long German text with no chapter headings led to a new feature: splitting long manuscripts into parts of about 3,000 words.
+- Deploying to Heroku uncovered a missing PostgreSQL driver and a `.gitignore` rule that hid a migration file.
+- The code was checked with flake8, JSHint, the W3C validators and Lighthouse, and the problems found were fixed.
 
 ## Credits
 ### Code
-[Any tutorials, documentation or code examples you used, with links]
-[How you used AI tools, if your course asks you to declare it]
+
+## Credits
+
+### Code
+
+- **Application factory:** the `create_app()` function in `app/__init__.py`
+  follows the
+  [Application Factories](https://flask.palletsprojects.com/en/stable/patterns/appfactories/)
+  pattern from the Flask documentation.
+- **User accounts:** login and logout use [Flask-Login](https://flask-login.readthedocs.io/), following its
+  documentation.
+- **Forms and CSRF protection:** [Flask-WTF](https://flask-wtf.readthedocs.io/) and its [CSRF protection](https://flask-wtf.readthedocs.io/en/stable/csrf/)
+  guide.
+- **Database:** [Flask-SQLAlchemy](https://flask-sqlalchemy.readthedocs.io/) or the models and
+  [Flask-Migrate](https://flask-migrate.readthedocs.io/) for migrations.
+- **Reading files:** [python-docx](https://python-docx.readthedocs.io/) for Word documents and [pypdf](https://pypdf.readthedocs.io/) for PDFs.
+- - **Procfile:** the `web` and `release` process types follow Heroku's
+  [Procfile](https://devcenter.heroku.com/articles/procfile) and
+  [Release Phase](https://devcenter.heroku.com/articles/release-phase)
+  documentation.
+
+**Deployment:** Heroku's
+  [Getting Started with Python](https://devcenter.heroku.com/articles/getting-started-with-python) guide and [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
+  documentation.
+  
+**Other tools**
+- Claude was used for the generation of the README template
+The entity relationship diagram was created with [dbdiagram.io](https://dbdiagram.io) from the models in `app/models.py`.
 
 ### Content
-Frankenstein by Mary Shelley, Alice's Adventures in Wonderland by Lewis Carroll and Im Bernsteinwald by Wilhelm Bölsche: public domain, from Project Gutenberg.
-Demo manuscripts in seed.py use short extracts from public-domain novels by Jane Austen, Charles Dickens and Herman Melville.
+
+- Sample manuscripts:
+
+### Content
+- Frankenstein by Mary Shelley, Alice's Adventures in Wonderland by Lewis Carroll and Im Bernsteinwald by Wilhelm Bölsche: public domain, from Project Gutenberg, downloaded for samples.
+- Demo manuscripts in seed.py use short extracts from public-domain novels by Jane Austen, Charles Dickens and Herman Melville.
 
 ### Fonts
 Bricolage Grotesque and Atkinson Hyperlegible from Google Fonts.
