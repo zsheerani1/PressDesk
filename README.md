@@ -232,7 +232,6 @@ for as many people as possible, including keyboard and screen reader users.
   still works if JavaScript is turned off.
 
 ## Features
-<!-- One short section per feature, each with a screenshot. -->
 
 ### Register and log in
 
@@ -249,25 +248,13 @@ for as many people as possible, including keyboard and screen reader users.
 ![Status](assets/screenshots/feature-status.png)
 
 
-### Notes
-[Add, edit, delete.]
-
-### Status changes
-[How status works.]
-
-### Edit and delete manuscripts
-[Including the confirmation page.]
-
-### Error pages
-[Custom 404 and 500 pages.]
-
-### Future features
-[Ideas you didn't have time for.]
-
 ## Data schema
-<!-- Check field names against app/models.py. A diagram image is good too. -->
 
-Show Image
+PressDesk uses a relational database: SQLite while developing locally and PostgreSQL on Heroku. The models are defined in `app/models.py` with Flask-SQLAlchemy, and changes to the database are managed with Flask-Migrate.
+
+![PressDesk entity relationship diagram](assets/screenshots/erd.png)
+
+*ERD made with [dbdiagram.io](https://dbdiagram.io). 
 
 User: a publisher account
 
