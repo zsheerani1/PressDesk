@@ -465,7 +465,6 @@ A short line starting "Chapter 3 had been…" in the middle of a chapter would b
 Contents lists at the start of a book create near-empty chapters	[your explanation]
 
 ## Deployment
-## Deployment
 
 PressDesk is deployed on [Heroku](https://www.heroku.com/) with a Heroku
 Postgres database.
@@ -498,8 +497,7 @@ Heroku they are set as Config Vars:
 | Key | Value |
 |---|---|
 | `SECRET_KEY` | A long random string, different from the one used locally |
-| `DATABASE_URL` | Added automatically by Heroku Postgres |
-| `DEBUG` | `False` |
+| `DATABASE_URL` | Added by Heroku Postgres |
 
 `config.py` reads these values and converts Heroku's `postgres://` database
 address to the `postgresql://` form that SQLAlchemy expects.
@@ -543,13 +541,6 @@ heroku run python seed.py -a pressdesk
 The script prints each account and manuscript it creates. It is safe to run
 more than once, because anything that already exists is skipped.
 
-### Demo account
-
-The live site includes a demo publisher account with sample manuscripts. It
-holds sample data only.
-
-- **Email:** demo@pressdesk.example.com
-- **Password:** DemoPress2026!
 
 ### Checking the deployed version
 
@@ -590,9 +581,7 @@ Optionally add demo data: heroku run python seed.py
 
 ### Demo account
 
-
-
-The demo account contains sample data only:
+The demo account contains sample data only; I created a demo login for ease of use:
 
 Email: demo@pressdesk.example.com
 Password: DemoPress2026!
@@ -626,9 +615,6 @@ Testing the deployed app with real books led to several improvements:
 - The code was checked with flake8, JSHint, the W3C validators and Lighthouse, and the problems found were fixed.
 
 ## Credits
-### Code
-
-## Credits
 
 ### Code
 
@@ -653,12 +639,11 @@ Testing the deployed app with real books led to several improvements:
   documentation.
   
 **Other tools**
-- Claude was used for the generation of the README template and for the generation of the wireframes.
-The entity relationship diagram was created with [dbdiagram.io](https://dbdiagram.io) from the models in `app/models.py`.
+- Claude was used for the generation of the README template and for the generation of the wireframes. 
+- The entity relationship diagram was created with [dbdiagram.io](https://dbdiagram.io) from the models in `app/models.py`.
+- W3C Markup Validator, W3C CSS Validator, JSHint, flake8 and Chrome Lighthouse for testing.
 
 ### Content
-
-- Sample manuscripts:
 
 ### Content
 - Frankenstein by Mary Shelley, Alice's Adventures in Wonderland by Lewis Carroll and Im Bernsteinwald by Wilhelm Bölsche: public domain, from Project Gutenberg, downloaded for samples.
