@@ -130,26 +130,106 @@ Mobile Wireframes:
 
 
 ### Colour scheme
-<!-- List the main colours from style.css and why you chose them. -->
-Colour	Hex	Used for
-Teal	
-#0d6b5a	Header, main buttons
-Yellow	
-#ffd84d	Highlights, focus outlines
-[add more]		
+### Colour scheme
+
+PressDesk uses a deep teal as its main colour, with yellow as a highlight, like
+a highlighter pen on a manuscript. The palette is calm so the text being read
+always comes first. All colours are stored as CSS variables at the top of
+`style.css`, so the whole scheme can be changed in one place.
+
+**Brand colours**
+
+| Colour | Hex | Used for |
+|---|---|---|
+| Teal | `#0d6b5a` | Header, main buttons, links |
+| Dark teal | `#0a4f43` | Hover states for buttons and links |
+| Teal tint | `#e2f2ed` | Secondary buttons, upload area background |
+| Yellow | `#ffd84d` | Logo mark, focus outlines, the main button on the home page |
+| Yellow tint | `#fff6cc` | Notes (like sticky notes), the current chapter, hovered table rows |
+
+**Neutrals**
+
+| Colour | Hex | Used for |
+|---|---|---|
+| Text | `#1c2624` | Main text (a very dark green-grey, softer than pure black) |
+| Soft text | `#586662` | Secondary text such as dates and descriptions |
+| Page | `#eef2f1` | Page background |
+| Card | `#ffffff` | Panels and cards |
+| Field | `#f5f8f7` | Form fields, alternate table rows |
+| Line | `#d6dedb` | Borders |
+
+**Messages**
+
+| Colour | Hex | Used for |
+|---|---|---|
+| Success text / background | `#1a6136` / `#def3e6` | Green confirmation messages |
+| Error text / background | `#b42318` / `#fde4e1` | Red error messages |
+
+**Status tags**
+
+Each status has its own colour so manuscripts can be told apart at a glance.
+The status name is always written in the tag too, so meaning never depends on
+colour alone.
+
+| Status | Text | Background |
+|---|---|---|
+| Received | `#4c5754` | `#e6ebea` |
+| Reading | `#1d4fb8` | `#e1eafc` |
+| Shortlisted | `#8a5600` | `#fdefc8` |
+| Accepted | `#1a6136` | `#d9f1e2` |
+| Declined | `#b42318` | `#fde4e1` |
+
+Text and background pairs were chosen for strong contrast, and Lighthouse
+reported no contrast problems.
 
 ### Typography
-Bricolage Grotesque for headings. [Why you chose it.]
-Atkinson Hyperlegible for body text, designed by the Braille Institute to be easy to read for people with low vision.
 
+Both fonts are loaded from [Google Fonts](https://fonts.google.com/), with
+system fonts as fallbacks if they fail to load.
+
+- **[Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque)**
+  for headings and the PressDesk logo. It has a slightly hand-made, editorial
+  character that suits a tool for publishers, while staying clean and modern.
+  Headings are bold (700–800) with tight letter spacing.
+  *Fallbacks: Avenir Next, Arial, sans-serif.*
+- **[Atkinson Hyperlegible](https://fonts.google.com/specimen/Atkinson+Hyperlegible)**
+  for all body text. It was designed by the Braille Institute to be easy to
+  read for people with low vision, with letters that are hard to confuse
+  (such as I, l and 1). Since PressDesk is a tool for reading long manuscripts,
+  readability was the main priority.
+  *Fallbacks: Helvetica Neue, Arial, sans-serif.*
+
+**Sizes and spacing**
+
+- Body text is 17px (`1.0625rem`) with a line height of 1.6.
+- Chapter text is slightly larger, at 18px (`1.125rem`), with a line height of
+  1.85 and a maximum width of about 68 characters per line, a comfortable
+  length for long reading.
+- The main page heading scales with the screen size (`clamp()`), so it fits
+  phones without being too small on desktops.
+  
 ### Accessibility
-<!-- What you did and why. -->
-[e.g. visible focus outlines for keyboard users]
-[e.g. labels on every form field]
-[e.g. colour contrast checked]
 
-### Design decisions
-<!-- Explain any choices that go against usual conventions, for example: opening a "received" manuscript automatically marks it as "reading"; keeping all routes inside create_app(). -->
+PressDesk is a reading tool, so it was designed to be comfortable and usable
+for as many people as possible, including keyboard and screen reader users.
+
+- **Readable font:** body text uses Atkinson Hyperlegible, designed by the
+  Braille Institute for readers with low vision. Chapter text is set larger,
+  with generous line spacing and a limited line length for long reading.
+- **Colour contrast:** text and background colours were chosen for strong
+  contrast, and checked with Lighthouse.
+- **Never colour alone:** every status tag shows its name as text as well as
+  its colour, so it can be understood by people who can't tell the colours
+  apart.
+- **Visible focus:** links, buttons and the upload area show a clear outline
+  when reached with the keyboard (`:focus-visible`), so keyboard users can
+  always see where they are.
+- **Labelled forms:** every form field has a visible `<label>`, so screen
+  readers announce what each field is for and clicking the label selects the
+  field.
+- **Keyboard-friendly upload:** the drag-and-drop area is a label for a normal
+  file input, so it can be reached with Tab and opened with Enter, and it
+  still works if JavaScript is turned off.
 
 ## Features
 <!-- One short section per feature, each with a screenshot. -->
