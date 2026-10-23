@@ -251,7 +251,7 @@ splitting, run with `python -m pytest`.
 ![W3C CSS Validator (Jigsaw)](assets/screenshots/w3c-css-validator-(jigsaw).png)
 
 | JavaScript | [JSHint](https://jshint.com/)
-![JSHint]([assets/screenshots/jshint.png)
+![jshint](assets/screenshots/jshint.png)
 
 | Python | flake8 (PEP8) 
 ![flake8 PEP8](assets/screenshots/flake8-(pep8).png)
