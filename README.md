@@ -1,50 +1,121 @@
 PressDesk
 
-PressDesk is a web app for editors at small independent presses who receive manuscripts from writers. Instead of keeping submissions scattered across email attachments, an editor uploads each manuscript as a Word, PDF, or text file, and PressDesk automatically splits it into chapters. They can then read it chapter by chapter, track which chapters they’ve read, add notes as they go, and move the manuscript through the decision stages: received, reading, shortlisted, accepted, or declined. Each press’s manuscripts are private to its own account.
+PressDesk is a web app for editors at small independent presses who receive manuscripts from writers. Instead of keeping submissions scattered across email attachments, editors upload each manuscript as a Word, PDF, or text file, and PressDesk automatically splits it into chapters. They can then read it chapter by chapter, track which chapters they’ve read, add notes as they go, and move the manuscript through the decision stages: received, reading, shortlisted, accepted, or declined. Each press’s manuscripts are private to its own account.
 
 Live site: https://pressdesk-23c91ab98baa.herokuapp.com/
 
 
-Contents
-Rationale
-User stories
-Wireframes
-UX design
-Features
-Data schema
-Security
-Technologies
-Testing
-Deployment
-Running locally
-Development notes
-Credits
-Rationale
+## Contents
 
-<!-- Why does this app need to exist? Write this in your own voice. Cover: - the problem small presses have with incoming manuscripts - who the target audience is (small indie presses, editors, readers) - why a web app is the right solution - the value it gives them -->
-Target audience
-[e.g. editors at small independent presses who receive manuscripts by email]
-The problem
+- [Rationale](#rationale)
+- [User stories](#user-stories)
+- [UX design](#ux-design)
+- [Features](#features)
+- [Data schema](#data-schema)
+- [Security](#security)
+- [Technologies](#technologies)
+- [Testing](#testing)
+- [Bugs](#bugs)
+- [Deployment](#deployment)
+- [Running locally](#running-locally)
+- [Development notes](#development-notes)
+- [Credits](#credits)
 
-[Describe the problem.]
+## Rationale
+PressDesk is a reading desk for small independent presses. It gives an editor one private place to upload manuscripts, read them chapter by chapter, take notes as they go, and track each submission from arrival to final decision.
 
-Why a web app
 
-[Explain.]
 
-User stories
-<!-- Write these from the publisher's point of view. The final app should match them. -->
-As a…	I want to…	So that…
-publisher	upload a manuscript in .docx, .txt or .pdf	I can read submissions in one place
-publisher	see the manuscript split into chapters	I can read it a chapter at a time
-publisher	add, edit and delete notes on a chapter	I can record my thoughts as I read
-publisher	set a status (received, reading, shortlisted, accepted, declined)	I can track where each submission is
-publisher	filter and search my manuscripts	I can find a submission quickly
-publisher	know my manuscripts are private to my account	other presses can't see them
-[add your own]		
-UX design
+### Target audience
+- Editors and publishers at small independent presses, often a team of one to
+  five people, who read unsolicited and agented submissions themselves.
+- Readers and assistant editors who share the first read of the submissions
+  pile.
 
-Wireframes
+These users are not developers. They need a tool that works straight away, with no setup, training or technical knowledge.
+
+### The problem
+Small presses usually receive manuscripts as email attachments: Word documents, PDFs and plain text files, each formatted differently. An editor ends up with:
+
+- manuscripts scattered across an inbox, downloads folder and desktop;
+- whole novels opened as one long document, with no easy way to read a chapter at a time or see how far they have got;
+- reading notes kept separately in notebooks, spreadsheets or the margins of a file, cut off from the text they refer to;
+- no clear overview of which submissions are new, being read, shortlisted, accepted or declined.
+
+Larger submission platforms exist, but they focus on collecting submissions and are built for bigger organisations. PressDesk focuses on the part that takes a small press the most time: reading and deciding.
+
+### Why a web app
+
+- **Available anywhere.** An editor can read on a laptop at the office and pick up the same chapter on a phone or tablet later, with nothing to install.
+- **Works with the files presses already receive.** Uploading a .docx, .pdf or .txt file is all it takes; PressDesk splits it into chapters automatically.
+- **Keeps everything together.** Manuscripts, chapters, notes and statuses are stored in one database, so nothing is lost between files and folders.
+- **Private by account.** Each press logs in to see only its own manuscripts, which matters when handling unpublished work.
+
+### Value to the user
+
+PressDesk turns a clutered inbox into a clear reading list. Editors can see at a glance how many manuscripts are waiting at each stage, read submissions in manageable chapters rather than one long scroll, and keep their notes next to the text, ready to refer back to when making a decision or writing to the author.
+
+## User stories
+## User stories
+
+### New visitor
+
+| As a… | I want to… | So that… |
+|---|---|---|
+| new visitor | understand what PressDesk does from the home page | I can decide whether it is useful for my press |
+| new visitor | create an account with my name, email and press name | I can start using PressDesk |
+| new visitor | see clear messages if I make a mistake when registering | I know what to correct |
+
+### Returning publisher
+
+| As a… | I want to… | So that… |
+|---|---|---|
+| publisher | log in and out securely | my press's manuscripts stay private |
+| publisher | know that other presses cannot see my manuscripts | unpublished work is kept confidential |
+
+### Uploading manuscripts
+
+| As a… | I want to… | So that… |
+|---|---|---|
+| publisher | upload a manuscript as a .docx, .pdf or .txt file | I can work with the files authors actually send |
+| publisher | drag a file onto the page or choose it with a button | uploading is quick and easy |
+| publisher | see a progress bar while a file uploads | I know the upload is working |
+| publisher | have the manuscript split into chapters automatically | I don't have to divide it up myself |
+| publisher | have long manuscripts with no chapter headings split into parts | I'm not faced with one very long page |
+| publisher | get a clear error if a file is empty, too large or the wrong type | I understand what went wrong and can try again |
+
+### Reading and notes
+
+| As a… | I want to… | So that… |
+|---|---|---|
+| publisher | read a manuscript one chapter at a time | long submissions are easier to read |
+| publisher | move between chapters with a chapter list and Previous / Next buttons | I can find my place quickly |
+| publisher | mark chapters as read | I can see how far I've got |
+| publisher | add notes to a chapter | my thoughts stay next to the text they're about |
+| publisher | edit and delete my notes | I can update my thinking as I read on |
+
+### Managing submissions
+
+| As a… | I want to… | So that… |
+|---|---|---|
+| publisher | set each manuscript's status (received, reading, shortlisted, accepted, declined) | I can track where every submission stands |
+| publisher | have a manuscript move to "reading" when I first open it | its status stays accurate without extra clicks |
+| publisher | see how many manuscripts are at each status on my dashboard | I get an overview of my submissions at a glance |
+| publisher | filter by status and search by title or author | I can find a manuscript quickly |
+| publisher | edit a manuscript's title, author and genre | I can correct details entered at upload |
+| publisher | delete a manuscript, with a confirmation step first | I can clear out old submissions without deleting one by mistake |
+
+### Using the site
+
+| As a… | I want to… | So that… |
+|---|---|---|
+| publisher | use PressDesk on my phone or tablet | I can read submissions away from my desk |
+| publisher | use the site with a keyboard or screen reader | PressDesk is accessible to me |
+| publisher | see a helpful page if a link is broken or something goes wrong | I'm never left stuck |
+
+## UX design
+
+### Wireframes
 
 Desktop Wireframes:
 
@@ -58,9 +129,7 @@ Mobile Wireframes:
 ![Mobile Wireframes](assets/screenshots/wireframe-mobile.png)
 
 
-Show Image
-
-Colour scheme
+### Colour scheme
 <!-- List the main colours from style.css and why you chose them. -->
 Colour	Hex	Used for
 Teal	
@@ -68,53 +137,57 @@ Teal
 Yellow	
 #ffd84d	Highlights, focus outlines
 [add more]		
-Typography
+
+### Typography
 Bricolage Grotesque for headings. [Why you chose it.]
 Atkinson Hyperlegible for body text, designed by the Braille Institute to be easy to read for people with low vision.
-Accessibility
+
+### Accessibility
 <!-- What you did and why. -->
 [e.g. visible focus outlines for keyboard users]
 [e.g. labels on every form field]
 [e.g. colour contrast checked]
-Design decisions
+
+### Design decisions
 <!-- Explain any choices that go against usual conventions, for example: opening a "received" manuscript automatically marks it as "reading"; keeping all routes inside create_app(). -->
-Features
+
+## Features
 <!-- One short section per feature, each with a screenshot. -->
-Register and log in
+
+### Register and log in
 
 [Description] Show Image
 
-Dashboard
+### Dashboard
 
 [Status counts, filter, search.]
 
-Upload a manuscript
+### Upload a manuscript
 
 [Drag and drop, progress bar, works without JavaScript, file checks.]
 
-Read by chapter
+### Read by chapter
 
 [Chapter list, previous/next, mark as read.]
 
-Notes
+### Long manuscripts split into parts
 
+### Notes
 [Add, edit, delete.]
 
-Status changes
-
+### Status changes
 [How status works.]
 
-Edit and delete manuscripts
-
+### Edit and delete manuscripts
 [Including the confirmation page.]
 
-Error pages
-
+### Error pages
 [Custom 404 and 500 pages.]
 
-Future features
+### Future features
 [Ideas you didn't have time for.]
-Data schema
+
+## Data schema
 <!-- Check field names against app/models.py. A diagram image is good too. -->
 
 Show Image
@@ -160,7 +233,7 @@ chapter_id	Integer	Foreign key → Chapter
 
 Relationships: one user has many manuscripts; one manuscript has many chapters; one chapter has many notes. Deleting a manuscript deletes its chapters and notes.
 
-Security
+## Security
 Secret keys and the database URL are kept in environment variables (env.py locally, which is in .gitignore; Config Vars on Heroku). They are never committed.
 DEBUG is off unless explicitly set to "True", and is off on the live site.
 Passwords are hashed, never stored as plain text.
@@ -169,14 +242,17 @@ Every item is checked against the logged-in publisher, and other publishers' ite
 All forms are protected against CSRF.
 Redirects after login only go to pages on this site.
 Uploads are limited to 5 MB and to .docx, .txt and .pdf files.
-Technologies
+
+## Technologies
 Languages: Python, HTML, CSS, JavaScript
 Framework and libraries: Flask, Flask-SQLAlchemy, Flask-Migrate, Flask-Login, Flask-WTF, python-docx, pypdf, Gunicorn
 Database: SQLite locally, PostgreSQL on Heroku
 Tools: Git, GitHub, VS Code, Heroku, pytest
 [Add any design tools you used, e.g. for wireframes]
-Testing
-Automated tests
+
+## Testing
+
+### Automated tests
 
 Run with:
 
@@ -185,7 +261,6 @@ python -m pytest
 
 [Say what the tests cover and add a screenshot of them passing.]
 
-Manual testing
 ### Manual testing
 
 All tests were carried out on the deployed site in a private browser window.
@@ -255,7 +330,7 @@ splitting, run with `python -m pytest`.
 | Python | flake8 (PEP8) 
 ![flake8 PEP8](assets/screenshots/flake8-(pep8).png)
 
-| Accessibility | 
+### Lighthouse
 
 [Lighthouse](https://developer.chrome.com/docs/lighthouse) (Chrome DevTools)
 
@@ -271,6 +346,7 @@ splitting, run with `python -m pytest`.
 
 ![Lighthouse Home Page Mobile](assets/screenshots/lighthouse-home-page-mobile.png)
 
+### Sample files
 
 ### Bugs
 
@@ -280,19 +356,20 @@ splitting, run with `python -m pytest`.
 |---|---|---|
 | Heroku release failed: "No module named 'psycopg'" | The app asked for the psycopg 3 PostgreSQL driver, but only psycopg2 was installed | Added
 
-Fixed
-
+### Fixed bugs
 Bug	Fix
 [e.g. syntax error in demo data]	[what you changed]
 
-Known and unfixed
+### Known bugs
 
 Bug	Why it's left
 A short line starting "Chapter 3 had been…" in the middle of a chapter would be treated as a heading	[your explanation]
 Contents lists at the start of a book create near-empty chapters	[your explanation]
-Deployment
+
+## Deployment
 <!-- Write these steps as you actually do them, so they're accurate. -->
-Heroku
+
+### Heroku
 Create a new app on Heroku.
 Add the Heroku Postgres add-on.
 In Settings → Config Vars, add:
@@ -303,13 +380,17 @@ In Deploy, connect the GitHub repository and deploy the main branch.
 Run the database migrations: [how you did it, e.g. the release line in the Procfile]
 Optionally add demo data: heroku run python seed.py
 [Check the live site matches the local version.]
-Demo account
+
+### Demo account
+
+
 
 The demo account contains sample data only:
 
 Email: demo@pressdesk.example.com
 Password: DemoPress2026!
-Running locally
+
+## Running locally
 bash
 git clone https://github.com/zsheerani1/PressDesk.git
 cd PressDesk
@@ -320,17 +401,20 @@ Copy env_example.py to a new file called env.py and fill in your own values.
 Set up the database: flask --app run db upgrade
 Optionally add demo data: python seed.py
 Start the app: python run.py
-Development notes
+
+## Development notes
 <!-- Be accurate about how the project was developed. -->
 
 [e.g. PressDesk was developed locally before version control was set up and moved into this repository on 22 October 2026. Changes since then are committed individually.]
 
-Credits
-Code
+## Credits
+### Code
 [Any tutorials, documentation or code examples you used, with links]
 [How you used AI tools, if your course asks you to declare it]
-Content
+
+### Content
 Frankenstein by Mary Shelley, Alice's Adventures in Wonderland by Lewis Carroll and Im Bernsteinwald by Wilhelm Bölsche: public domain, from Project Gutenberg.
 Demo manuscripts in seed.py use short extracts from public-domain novels by Jane Austen, Charles Dickens and Herman Melville.
-Fonts
+
+### Fonts
 Bricolage Grotesque and Atkinson Hyperlegible from Google Fonts.
