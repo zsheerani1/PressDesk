@@ -244,13 +244,34 @@ splitting, run with `python -m pytest`.
 
 ### Validators
 
-| Check | Tool | Result |
-|---|---|---|
-| HTML | [W3C Markup Validator](https://validator.w3.org/) | |
-| CSS | [W3C CSS Validator (Jigsaw)](https://jigsaw.w3.org/css-validator/) | |
-| JavaScript | [JSHint](https://jshint.com/) | |
-| Python | flake8 (PEP8) | |
-| Accessibility | [Lighthouse](https://developer.chrome.com/docs/lighthouse) (Chrome DevTools) | |
+| HTML | [W3C Markup Validator](https://validator.w3.org/)
+![WRC Markup Validator](assets/screenshots/W3C%20Markup%20Validator.png)
+
+| CSS | [W3C CSS Validator (Jigsaw)](https://jigsaw.w3.org/css-validator/) 
+![W3C CSS Validator (Jigsaw)](assets/screenshots/W3C%20CSS%20Validator%20(Jigsaw).png)
+
+| JavaScript | [JSHint](https://jshint.com/)
+![JSHint](assets/screenshots/JSHint.png)
+
+| Python | flake8 (PEP8) 
+![flake8 PEP8](assets/screenshots/flake8%20(PEP8).png)
+
+| Accessibility | 
+
+[Lighthouse](https://developer.chrome.com/docs/lighthouse) (Chrome DevTools)
+
+![Lighthouse Create Account Mobile](assets/screenshots/Lighthouse%20Create%20Account%20Mobile.png)
+
+![Lighthouse Create Account Desktop](assets/screenshots/lighthouse-create-account-mobile.png)
+
+![Lighthouse Dashboard Desktop](assets/screenshots/lighthouse-desktop-dashboard.png)
+
+![Lighthouse Dashboard Mobile](assets/screenshots/lighthouse-mobile-dashboard.png)
+
+![Lighthouse Home Page Desktop](assets/screenshots/lighthouse-home-page-desktop.png)
+
+![Lighthouse Home Page Mobile](assets/screenshots/lighthouse-home-page-mobile.png)
+
 
 ### Bugs
 
