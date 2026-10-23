@@ -580,7 +580,6 @@ Optionally add demo data: heroku run python seed.py
 [Check the live site matches the local version.]
 
 ### Demo account
-
 The demo account contains sample data only; I created a demo login for ease of use:
 
 Email: demo@pressdesk.example.com
@@ -602,11 +601,9 @@ Start the app: python run.py
 The app is built with Flask and was developed in VS Code.
 
 ### Version control
-
 The project was developed locally for several weeks before version control was set up. It was moved into this repository on 22 October 2026, so the first commit contains the application as it stood at that point. Every change since then, including new features, bug fixes, testing, deployment and documentation, has been committed separately with a message describing it.
 
 ### Changes made during testing and deployment
-
 Testing the deployed app with real books led to several improvements:
 
 - Public-domain books from Project Gutenberg replaced the original sample files, which exposed issues with contents lists and Word heading styles.
@@ -614,10 +611,12 @@ Testing the deployed app with real books led to several improvements:
 - Deploying to Heroku uncovered a missing PostgreSQL driver and a `.gitignore` rule that hid a migration file.
 - The code was checked with flake8, JSHint, the W3C validators and Lighthouse, and the problems found were fixed.
 
+### Version control
+The project was developed locally for several weeks before version control was set up. It was moved into this repository later, so the first commit contains the application as it stood at that point. Every change since then, including new features, bug fixes, testing, deployment and documentation, has been committed separately with a message describing it.
+
 ## Credits
 
 ### Code
-
 - **Application factory:** the `create_app()` function in `app/__init__.py`
   follows the
   [Application Factories](https://flask.palletsprojects.com/en/stable/patterns/appfactories/)
@@ -642,8 +641,6 @@ Testing the deployed app with real books led to several improvements:
 - Claude was used for the generation of the README template and for the generation of the wireframes. 
 - The entity relationship diagram was created with [dbdiagram.io](https://dbdiagram.io) from the models in `app/models.py`.
 - W3C Markup Validator, W3C CSS Validator, JSHint, flake8 and Chrome Lighthouse for testing.
-
-### Content
 
 ### Content
 - Frankenstein by Mary Shelley, Alice's Adventures in Wonderland by Lewis Carroll and Im Bernsteinwald by Wilhelm Bölsche: public domain, from Project Gutenberg, downloaded for samples.
