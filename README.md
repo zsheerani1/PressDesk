@@ -653,7 +653,7 @@ Testing the deployed app with real books led to several improvements:
   documentation.
   
 **Other tools**
-- Claude was used for the generation of the README template
+- Claude was used for the generation of the README template and for the generation of the wireframes.
 The entity relationship diagram was created with [dbdiagram.io](https://dbdiagram.io) from the models in `app/models.py`.
 
 ### Content
