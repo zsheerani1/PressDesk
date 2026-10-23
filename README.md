@@ -245,16 +245,16 @@ splitting, run with `python -m pytest`.
 ### Validators
 
 | HTML | [W3C Markup Validator](https://validator.w3.org/)
-![WRC Markup Validator](assets/screenshots/W3C%20Markup%20Validator.png)
+![WRC Markup Validator](assets/screenshots/w3c-markup-validator.png)
 
 | CSS | [W3C CSS Validator (Jigsaw)](https://jigsaw.w3.org/css-validator/) 
-![W3C CSS Validator (Jigsaw)](assets/screenshots/W3C%20CSS%20Validator%20(Jigsaw).png)
+![W3C CSS Validator (Jigsaw)](assets/screenshots/w3c-css-validator-(jigsaw).png)
 
 | JavaScript | [JSHint](https://jshint.com/)
-![JSHint](assets/screenshots/JSHint.png)
+![JSHint]([assets/screenshots/jshint.png)
 
 | Python | flake8 (PEP8) 
-![flake8 PEP8](assets/screenshots/flake8%20(PEP8).png)
+![flake8 PEP8](assets/screenshots/flake8-(pep8).png)
 
 | Accessibility | 
 
