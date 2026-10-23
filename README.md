@@ -260,7 +260,7 @@ splitting, run with `python -m pytest`.
 
 [Lighthouse](https://developer.chrome.com/docs/lighthouse) (Chrome DevTools)
 
-![Lighthouse Create Account Mobile](assets/screenshots/Lighthouse%20Create%20Account%20Mobile.png)
+![Lighthouse Create Account Mobile](assets/screenshots/lighthouse-create-account-mobile.png)
 
 ![Lighthouse Create Account Desktop](assets/screenshots/lighthouse-create-account-mobile.png)
 
