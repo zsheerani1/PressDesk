@@ -241,7 +241,7 @@ for as many people as possible, including keyboard and screen reader users.
 
 ### Dashboard
 
-[Dashboard](assets/screenshots/feature-dashboard.png)
+![Dashboard](assets/screenshots/feature-dashboard.png)
 
 ### Status
 
